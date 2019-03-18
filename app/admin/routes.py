@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from flask import render_template, flash, redirect, url_for
-from flask_login import login_required
 
 from app import db
 from app.admin import bp
@@ -11,7 +10,6 @@ from app.models import User, Dataset, Task
 
 
 @bp.route("/assign", methods=("GET", "POST"))
-@login_required
 @admin_required
 def assign():
     form = AdminAssignTaskForm()
@@ -40,3 +38,8 @@ def assign():
     return render_template(
         "admin/assign.html", title="Assign Task", form=form, tasks=tasks
     )
+
+@bp.route("/", methods=("GET",))
+@admin_required
+def index():
+    return render_template("admin/index.html", title="Admin Home")

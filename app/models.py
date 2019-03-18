@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     last_active = db.Column(
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
+    is_admin = db.Column(db.Boolean(), default=False)
 
     def __repr__(self):
         return "<User %r>" % self.username

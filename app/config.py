@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 # TODO: change these things to an instance path

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<h1>Assign Task</h1>
+<div class="row">
+	<div class="col-md-4">
+		{{ wtf.quick_form(form) }}
+	</div>
+</div>
+<article class="overview">
+  <table>
+    <tr>
+        <th>User ID</th>
+        <th>Username</th>
+        <th>Dataset ID</th>
+        <th>Dataset Name</th>
+        <th>Status</th>
+        <th>Completed On</th>
+      </tr>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.user_id }}</td>
+        <td>{{ task.username }}</td>
+        <td>{{ task.dataset_id }}</td>
+        <td>{{ task.dataset_name }}</td>
+        <td>{{ task.done }}</td>
+        <td>{{ task.completed_on }}</td>
+      </tr>
+      {% endfor %}
+    </tr>
+  </table>
+</article>
+{% endblock %}

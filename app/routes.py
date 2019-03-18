@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
@@ -22,6 +23,8 @@ def index():
 @app.route("/login", methods=("GET", "POST"))
 def login():
     if current_user.is_authenticated:
+        current_user.last_active = datetime.datetime.utcnow()
+        db.session.commit()
         return redirect(url_for("index"))
     form = LoginForm()
     if form.validate_on_submit():

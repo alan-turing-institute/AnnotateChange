@@ -61,6 +61,17 @@ itsdangerous = ">=0.24"
 
 [[package]]
 category = "main"
+description = "User session management for Flask"
+name = "flask-login"
+optional = false
+python-versions = "*"
+version = "0.4.1"
+
+[package.dependencies]
+Flask = "*"
+
+[[package]]
+category = "main"
 description = "SQLAlchemy database migrations for Flask applications using Alembic"
 name = "flask-migrate"
 optional = false
@@ -228,7 +239,7 @@ python-versions = "*"
 version = "2.2.1"
 
 [metadata]
-content-hash = "71d5d24e1ceaef122c936d2bf4afdf2eeecd408f93268332605e045c7a054472"
+content-hash = "e6689d7bbc818777fee652ee8c8b6d54bf9ceb5bbce6c67adf74b39add3ecd48"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -238,6 +249,7 @@ attrs = ["69c0dbf2ed392de1cb5ec704444b08a5ef81680a61cb899dc08127123af36a79", "f0
 click = ["2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13", "5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"]
 colorama = ["05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d", "f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"]
 flask = ["2271c0070dbcb5275fad4a82e29f23ab92682dc45f9dfbc22c02ba9b9322ce48", "a080b744b7e345ccfcbc77954861cb05b3c63786e93f2b3875e0913d44b43f05"]
+flask-login = ["c815c1ac7b3e35e2081685e389a665f2c74d7e077cb93cecabaea352da4752ec"]
 flask-migrate = ["a361578cb829681f860e4de5ed2c48886264512f0c16144e404c36ddc95ab49c", "c24d105c5d6cc670de20f8cbfb909e04f4e04b8784d0df070005944de1f21549"]
 flask-sqlalchemy = ["3bc0fac969dd8c0ace01b32060f0c729565293302f0c4269beed154b46bec50b", "5971b9852b5888655f11db634e87725a9031e170f37c0ce7851cf83497f56e53"]
 flask-wtf = ["5d14d55cfd35f613d99ee7cba0fc3fbbe63ba02f544d349158c14ca15561cc36", "d9a9e366b32dcbb98ef17228e76be15702cd2600675668bca23f63a7947fd5ac"]

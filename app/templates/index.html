@@ -2,16 +2,40 @@
 
 {% block app_content %}
 {% if current_user.is_authenticated %}
-<span>Hi, {{ current_user.username }}!</span>
-{% else %}
-<article>
-	<div>
-		Welcome to <i>AnnotateChange</i> a tool for annotating time 
-		series data for changepoint analysis.
-		<br>
-		<br>
-		Please log in or register to get started.
+	<h1>Hi, {{ current_user.username }}!</h1>
+	<br>
+	Below are the annotation tasks we've asked you to do, thank you so much for 
+	your help!
+	<br>
+	{% if tasks_todo %}
+	<h2>Annotations to be done</h2>
+	<div class="tasks-todo">
+		<ol>
+		{% for task in tasks_todo %}
+		<li><a href="/annotate/{{ task.dataset.id }}">{{ task.dataset.name }}</a></li>
+		{% endfor %}
+		</ol>
 	</div>
-</article>
+	{% else %}
+		<span>No more tasks to do, thank you!</span>
+	{% endif %}
+	{% if tasks_done %}
+	<h2>Completed Annotations</h2>
+	<div class="tasks-done">
+		{% for task in tasks_done %}
+			<a class="task-done" href="/annotate/{{ task.dataset.id }}">{{ task.dataset.name }}</a>
+		{% endfor %}
+	</div>
+	{% endif %}
+{% else %}
+	<article>
+		<div>
+			Welcome to <i>AnnotateChange</i> a tool for annotating time 
+			series data for changepoint analysis.
+			<br>
+			<br>
+			Please log in or register to get started.
+		</div>
+	</article>
 {% endif %}
 {% endblock %}

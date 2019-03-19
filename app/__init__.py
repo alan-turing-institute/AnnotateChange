@@ -35,6 +35,16 @@ def create_app(config_class=Config):
     mail.init_app(app)
     bootstrap.init_app(app)
 
+    # Initialize the instance directory and necessary subdirectories
+    os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(
+        os.path.join(app.instance_path, app.config["TEMP_DIR"]), exist_ok=True
+    )
+    os.makedirs(
+        os.path.join(app.instance_path, app.config["DATASET_DIR"]),
+        exist_ok=True,
+    )
+
     # Register all the blueprints
     from app.errors import bp as errors_bp
 

@@ -22,3 +22,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS = ['gvandenburg@turing.ac.uk']
+
+    # these should be used relative to the instance path
+    DATASET_DIR = "datasets"
+    TEMP_DIR = "tmp"

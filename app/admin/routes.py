@@ -10,17 +10,17 @@ from app import db
 from app.admin import bp
 from app.admin.datasets import get_name_from_dataset, md5sum
 from app.admin.decorators import admin_required
-from app.admin.forms import AdminAssignTaskForm, AdminAddDatasetForm
+from app.admin.forms import AdminManageTaskForm, AdminAddDatasetForm
 from app.models import User, Dataset, Task
 
 
-@bp.route("/assign", methods=("GET", "POST"))
+@bp.route("/manage", methods=("GET", "POST"))
 @admin_required
-def assign():
+def manage():
     user_list = [(u.id, u.username) for u in User.query.all()]
     dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
 
-    form = AdminAssignTaskForm()
+    form = AdminManageTaskForm()
     form.username.choices = user_list
     form.dataset.choices = dataset_list
 
@@ -28,26 +28,45 @@ def assign():
         user = User.query.filter_by(id=form.username.data).first()
         if user is None:
             flash("User does not exist.")
-            return redirect(url_for("admin.assign"))
+            return redirect(url_for("admin.manage"))
         dataset = Dataset.query.filter_by(id=form.dataset.data).first()
         if dataset is None:
             flash("Dataset does not exist.")
-            return redirect(url_for("admin.assign"))
+            return redirect(url_for("admin.manage"))
+
+        action = None
+        if form.assign.data:
+            action = "assign"
+        elif form.delete.data:
+            action = "delete"
+        else:
+            flash("Internal error: no button is true but form was submitted.")
+            return redirect(url_for("admin.manage"))
 
         task = Task.query.filter_by(
             annotator_id=user.id, dataset_id=dataset.id
         ).first()
-        if not task is None:
-            flash("Task assignment already exists.")
-            return redirect(url_for("admin.assign"))
+        if task is None:
+            if action == "delete":
+                flash("Can't delete a task that doesn't exist.")
+                return redirect(url_for("admin.manage"))
+            else:
+                task = Task(annotator_id=user.id, dataset_id=dataset.id)
+                db.session.add(task)
+                db.session.commit()
+                flash("Task registered successfully.")
+        else:
+            if action == "assign":
+                flash("Task assignment already exists.")
+                return redirect(url_for("admin.manage"))
+            else:
+                db.session.delete(task)
+                db.session.commit()
+                flash("Task deleted successfully.")
 
-        task = Task(annotator_id=user.id, dataset_id=dataset.id)
-        db.session.add(task)
-        db.session.commit()
-        flash("Task registered successfully.")
     tasks = Task.query.all()
     return render_template(
-        "admin/assign.html", title="Assign Task", form=form, tasks=tasks
+        "admin/manage.html", title="Assign Task", form=form, tasks=tasks
     )
 
 

@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<h1>Hi, {{ current_user.username }}!</h1>
+{% if current_user.is_authenticated %}
+<span>Hi, {{ current_user.username }}!</span>
+{% else %}
+<article>
+	<div>
+		Welcome to <i>AnnotateChange</i> a tool for annotating time 
+		series data for changepoint analysis.
+		<br>
+		<br>
+		Please log in or register to get started.
+	</div>
+</article>
+{% endif %}
 {% endblock %}

@@ -17,20 +17,26 @@ from app.models import User, Dataset, Task
 @bp.route("/assign", methods=("GET", "POST"))
 @admin_required
 def assign():
+    user_list = [(u.id, u.username) for u in User.query.all()]
+    dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
+
     form = AdminAssignTaskForm()
+    form.username.choices = user_list
+    form.dataset.choices = dataset_list
+
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(id=form.username.data).first()
         if user is None:
             flash("User does not exist.")
             return redirect(url_for("admin.assign"))
-        dataset = Dataset.query.filter_by(name=form.dataset.data).first()
+        dataset = Dataset.query.filter_by(id=form.dataset.data).first()
         if dataset is None:
             flash("Dataset does not exist.")
             return redirect(url_for("admin.assign"))
 
         task = Task.query.filter_by(
             annotator_id=user.id, dataset_id=dataset.id
-        )
+        ).first()
         if not task is None:
             flash("Task assignment already exists.")
             return redirect(url_for("admin.assign"))

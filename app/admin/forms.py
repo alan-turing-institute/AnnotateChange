@@ -6,8 +6,8 @@ from flask import current_app
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms import StringField, SubmitField, SelectField
+from wtforms.validators import DataRequired, ValidationError, InputRequired
 
 from werkzeug.utils import secure_filename
 
@@ -16,8 +16,10 @@ from app.admin.datasets import validate_dataset, get_name_from_dataset
 
 
 class AdminAssignTaskForm(FlaskForm):
-    username = StringField("Username", validators=[DataRequired()])
-    dataset = StringField("Dataset", validators=[DataRequired()])
+    username = SelectField(
+        "Username", coerce=int, validators=[InputRequired()]
+    )
+    dataset = SelectField("Dataset", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Assign")
 
 

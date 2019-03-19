@@ -9,26 +9,28 @@
 	</div>
 </div>
 <article class="overview">
-  <table>
-    <tr>
-        <th>User ID</th>
-        <th>Username</th>
-        <th>Dataset ID</th>
-        <th>Dataset Name</th>
-        <th>Status</th>
-        <th>Completed On</th>
-      </tr>
-      {% for task in tasks %}
-      <tr>
-        <td>{{ task.user_id }}</td>
-        <td>{{ task.username }}</td>
-        <td>{{ task.dataset_id }}</td>
-        <td>{{ task.dataset_name }}</td>
-        <td>{{ task.done }}</td>
-        <td>{{ task.completed_on }}</td>
-      </tr>
-      {% endfor %}
-    </tr>
-  </table>
+	<table class="table table-striped">
+		<thead class="thead-dark">
+			<th scope="col">Task ID</th>
+			<th scope="col">User ID</th>
+			<th scope="col">Username</th>
+			<th scope="col">Dataset ID</th>
+			<th scope="col">Dataset Name</th>
+			<th scope="col">Status</th>
+			<th scope="col">Completed On</th>
+		</thead>
+		{% for task in tasks %}
+		<tr>
+			<th scope="row">{{ task.id }}</th>
+			<td>{{ task.user.id }}</td>
+			<td>{{ task.user.username }}</td>
+			<td>{{ task.dataset.id }}</td>
+			<td>{{ task.dataset.name }}</td>
+			<td>{% if task.done %}Completed{% else %}Pending{% endif %}</td>
+			<td>{{ task.completed_on }}</td>
+		</tr>
+		{% endfor %}
+		</tr>
+	</table>
 </article>
 {% endblock %}

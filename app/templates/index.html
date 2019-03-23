@@ -12,7 +12,7 @@
 	<div class="tasks-todo">
 		<ol>
 		{% for task in tasks_todo %}
-		<li><a href="/annotate/{{ task.dataset.id }}">{{ task.dataset.name }}</a></li>
+		<li><a href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a></li>
 		{% endfor %}
 		</ol>
 	</div>
@@ -23,7 +23,7 @@
 	<h2>Completed Annotations</h2>
 	<div class="tasks-done">
 		{% for task in tasks_done %}
-			<a class="task-done" href="/annotate/{{ task.dataset.id }}">{{ task.dataset.name }}</a>
+			<a class="task-done" href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a>
 		{% endfor %}
 	</div>
 	{% endif %}

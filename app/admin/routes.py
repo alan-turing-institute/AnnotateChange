@@ -100,7 +100,7 @@ def add_dataset():
         dataset = Dataset(name=name, md5sum=md5sum(target_filename))
         db.session.add(dataset)
         db.session.commit()
-        flash("Dataset %r added successfully.", name)
+        flash("Dataset %r added successfully." % name)
         return redirect(url_for("admin.add_dataset"))
     return render_template("admin/add.html", title="Add Dataset", form=form)
 

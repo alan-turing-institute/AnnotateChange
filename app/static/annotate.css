@@ -3,25 +3,6 @@
 	text-align: center;
 }
 
-/*
-path {
-  stroke-width: 2;
-  fill: none;
-}
-
-.axis path, .axis line {
-  fill: none;
-  stroke: grey;
-  stroke-width: 1;
-  shape-rendering: crispEdges;
-}
-
-#changepoint-table {
-	margin: 0 auto;
-}
-
-*/
-
 .line {
 	fill: none;
 	stroke: blue;
@@ -33,8 +14,8 @@ circle {
 	fill: blue;
 }
 
-.zoom {
-	cursor: move;
-	fill: none;
-	pointer-events: fill;
+rect {
+	fill: white;
+	opacity: 0;
 }
+

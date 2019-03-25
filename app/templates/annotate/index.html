@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('static', filename='annotate.css')}}">
+{% endblock %}
+
+{% block app_content %}
+<h1>{{ task.dataset.name }}</h1>
+<div id="graph"></div>
+
+<div id="button" class="row">
+	<div class="col-md-3">
+		<button>Submit</button>
+	</div>
+</div>
+
+
+<h3>Selected Changepoints</h3>
+<div id="changepoint-table">
+	<table id="cp-table" class="table table-striped">
+	</table>
+</div>
+
+
+{# Based on: https://github.com/benalexkeen/d3-flask-blog-post/blob/master/templates/index.html #}
+<script src="http://d3js.org/d3.v5.min.js"></script>
+<script>
+	var graphData = {{ data.chart_data | safe }};
+
+/**** Starting the alternative in this block:
+  https://bl.ocks.org/mbostock/34f08d5e11952a80609169b7917d4172
+ **/
+var svg = d3.select("#graph").append("svg").attr("width", 960).attr("height", 500),
+	margin = {top: 20, right: 20, bottom: 110, left: 40},
+	margin2 = {top: 430, right: 20, bottom: 30, left: 40},
+	width = +svg.attr("width") - margin.left - margin.right,
+	height = +svg.attr("height") - margin.top - margin.bottom,
+	height2 = +svg.attr("height") - margin2.top - margin2.bottom;
+
+var x = d3.scaleLinear().range([0, width]),
+	y = d3.scaleLinear().range([height, 0]),
+	x2 = d3.scaleLinear().range([0, width]);
+
+var xAxis = d3.axisBottom(x),
+	yAxis = d3.axisLeft(y);
+
+var zoom = d3.zoom()
+	.scaleExtent([1, 10])
+	.translateExtent([[0, 0], [width, height]])
+	.extent([[0, 0], [width, height]])
+	.on("zoom", zoomed);
+
+var line = d3.line()
+	.x(function(d) { return x(d.X); })
+	.y(function(d) { return y(d.Y); });
+
+// used for clipping the path outside the graph
+svg.append("defs").append("clipPath")
+	.attr("id", "clip")
+	.append("rect")
+	.attr("width", width)
+	.attr("height", height);
+
+var focus = svg.append("g")
+	.attr("class", "focus")
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+function zoomed() {
+	/*
+	if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush")
+		return; // ignore zoom-by-brush
+		*/
+	var t = d3.event.transform;
+	x.domain(t.rescaleX(x2).domain());
+	// redraw
+	focus.select(".line").attr("d", line);
+	points.data(graphData)
+		.attr("cx", function(d) { return x(d.X) })
+		.attr("cy", function(d) { return y(d.Y) });
+	// update axis
+	focus.select(".axis--x").call(xAxis);
+}
+
+function draw(data) {
+	var n = 0;
+	data.forEach(function(d) {
+		d.X = n++;
+		d.Y = d.value;
+	});
+
+	var yExtent = d3.extent(data, function(d) { return d.Y; }),
+		yRange = yExtent[1] - yExtent[0];
+
+	x.domain(d3.extent(data, function(d) { return d.X; }));
+	y.domain([yExtent[0] - (yRange * 0.05), yExtent[1] + (yRange * 
+		0.05)]);
+	x2.domain(x.domain());
+
+	focus.append("path")
+		.datum(data)
+		.attr("class", "line")
+		.attr("d", line);
+
+	focus.append("g")
+		.attr("class", "axis axis--x")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis);
+
+	focus.append("g")
+		.attr("class", "axis axis--y")
+		.call(yAxis);
+
+	var points = focus.append("g")
+		.selectAll("dot")
+		.data(data)
+		.enter()
+		.append("circle")
+		.attr("cx", function(d) { return x(d.X); } )
+		.attr("cy", function(d) { return y(d.Y); } )
+		.attr("data_X", function(d) { return d.X; } )
+		.attr("data_Y", function(d) { return d.Y; } )
+		.attr("r", 4)
+		.attr("fill", "blue")
+		.on("click", function(d, i) {
+			// this function handles changepoint marking
+			var elem = d3.select(d);
+			if (elem.classed("changepoint")) {
+				elem.style("fill", "blue");
+				elem.classed("changepoint", false);
+			} else {
+				elem.style("fill", "red");
+				elem.classed("changepoint", true);
+			}
+			// updateTable();
+		});
+
+	var layer = svg.append("rect")
+		.attr("class", "zoom")
+		.attr("width", width)
+		.attr("height", height)
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.call(zoom);
+
+	return(points);
+};
+
+var points = draw(graphData);
+
+
+
+
+
+
+
+/***** END ALTERNATIVE **/
+
+
+/*
+	// Set the dimension of the svg
+  var margin = {top: 30, right: 50, bottom: 30, left: 50};
+  var svgWidth = 800;
+  var svgHeight = 400;
+  var graphWidth = svgWidth - margin.left - margin.right;
+  var graphHeight = svgHeight - margin.top - margin.bottom;
+
+  var xAxisScale = d3.scaleLinear().range([0, graphWidth]);
+  var yAxisScale = d3.scaleLinear().range([graphHeight, 0]);
+
+  var xAxis = d3.axisBottom(xAxisScale).ticks(5);
+  var yAxis = d3.axisLeft(yAxisScale).ticks(5);
+
+  var line = d3.line()
+    .x(function(d) { return xAxisScale(d.X); })
+    .y(function(d) { return yAxisScale(d.Y); });
+
+  var svg = d3.select("#graph")
+    .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", svgHeight)
+
+  var zoom = d3.zoom()
+    .scaleExtent([1, 5])
+    .on("zoom", zoomFunction);
+
+  var innerSpace = svg
+    .append("g")
+    .attr("class", "inner_space")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// Add the X Axis
+  var gX = innerSpace.append("g")
+    .attr("class", "axis axis--x")
+    .attr("transform", "translate(0," + graphHeight + ")")
+    .call(xAxis);
+
+// Add the Y Axis
+  var gY = innerSpace.append("g")
+    .attr("class", "axis axis--y")
+    .call(yAxis);
+
+  var view = innerSpace.append("rect")
+    .attr("class", "zoom")
+    .attr("width", graphWidth)
+    .attr("height", graphHeight)
+    .call(zoom)
+
+  function zoomFunction() {
+
+	  var e = d3.event,
+		  tx = Math.min(0, Math.max(e.transform.x, graphWidth - 
+			  graphWidth * e.scale)),
+		  ty = Math.min(0, Math.max(e.transform.y, graphHeight - 
+			  graphHeight * e.scale));
+	  zoom.translateBy([tx, ty]);
+
+	  theline.attr("transform", [
+		  "translate(" + [tx, ty] + ")",
+		  "scale(" + e.scale + ")"
+		  ].join(" "));
+
+  }
+
+  function updateTable() {
+	var changepoints = document.getElementsByClassName("changepoint");
+
+	var myTableDiv = document.getElementById("changepoint-table");
+
+	var old_table = document.getElementById("cp-table");
+	old_table.remove();
+
+	var table = document.createElement('TABLE')
+	table.id = "cp-table";
+	table.className = "table table-striped";
+
+	var heading = new Array();
+	heading[0] = "#";
+	heading[1] = "X";
+	heading[2] = "Y";
+
+	  // TABLE COLUMNS
+	var thead = document.createElement('THEAD');
+	thead.className = "thead-dark";
+	table.appendChild(thead);
+	for (i = 0; i < heading.length; i++) {
+		var th = document.createElement('TH')
+		th.appendChild(document.createTextNode(heading[i]));
+		th.setAttribute("scope", "col");
+		thead.appendChild(th);
+	}
+	var body = document.createElement("TBODY");
+
+//TABLE ROWS
+	for (i = 0; i < changepoints.length; i++) {
+		cp = changepoints[i];
+
+		var tr = document.createElement('TR');
+
+		var th = document.createElement('TH');
+		th.setAttribute("scope", "row");
+		th.appendChild(document.createTextNode(i+1));
+		tr.appendChild(th);
+
+		var td = document.createElement('TD');
+		td.appendChild(document.createTextNode(
+			d3.select(cp).data()[0].X
+		));
+		tr.appendChild(td);
+
+		var td = document.createElement('TD');
+		td.appendChild(document.createTextNode(
+			d3.select(cp).data()[0].Y
+		));
+		tr.appendChild(td);
+
+		body.appendChild(tr);
+	}
+	table.appendChild(body);
+	myTableDiv.appendChild(table);
+  }
+
+  function draw(data) {
+    var n = 0;
+    data.forEach(function(d) {
+      d.X = n++;
+      d.Y = d.value;
+    });
+
+    xAxisScale.domain(d3.extent(data, function(d) { return d.X; }));
+    yAxisScale.domain([
+      d3.min(data, function(d) {
+	return Math.min(d.Y)
+      }),
+      d3.max(data, function(d) {
+	return Math.max(d.Y)
+      })]);
+
+	  // the line
+    var theline = innerSpace.append("path")
+      .style("stroke", "blue")
+      .style("fill", "none")
+      .attr("class", "line")
+      .attr("d", line(data));
+
+// the points
+    var thepoints = innerSpace.append("g")
+	.selectAll("dot")
+	.data(data)
+	.enter()
+	.append("circle")
+	.attr("cx", function(d) { return xAxisScale(d.X) } )
+	.attr("cy", function(d) { return yAxisScale(d.Y) } )
+	.attr("data_X", function(d) { return d.X } )
+	.attr("data_Y", function(d) { return d.Y } )
+	.attr("r", 4)
+	.attr("fill", "blue")
+	.on("click", function(d, i) {
+		// this function handles changepoint marking
+		var elem = d3.select(this);
+		if (elem.classed("changepoint")) {
+			elem.style("fill", "blue");
+			elem.classed("changepoint", false);
+		} else {
+			elem.style("fill", "red");
+			elem.classed("changepoint", true);
+		}
+		updateTable();
+	});
+    return [theline, thepoints];
+  };
+
+  var out = draw(graphData);
+  var theline = out[0]
+  var thepoints = out[1];
+  */
+</script>
+{% endblock %}

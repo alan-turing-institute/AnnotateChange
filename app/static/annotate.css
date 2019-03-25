@@ -1,0 +1,40 @@
+#graph {
+	margin: 0 auto;
+	text-align: center;
+}
+
+/*
+path {
+  stroke-width: 2;
+  fill: none;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: grey;
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+#changepoint-table {
+	margin: 0 auto;
+}
+
+*/
+
+.line {
+	fill: none;
+	stroke: blue;
+	clip-path: url(#clip);
+}
+
+circle {
+	clip-path: url(#clip);
+	fill: blue;
+}
+
+.zoom {
+	cursor: move;
+	fill: none;
+	pointer-events: fill;
+}

@@ -65,7 +65,7 @@ def register():
 
         send_email_confirmation_email(user)
         flash(
-            "An email has been sent to confirm your account, please check your email.",
+            "An email has been sent to confirm your account, please check your email (including the spam folder).",
             "info",
         )
 

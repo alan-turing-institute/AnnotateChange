@@ -11,7 +11,7 @@ from app.admin import bp
 from app.admin.datasets import get_name_from_dataset, md5sum
 from app.admin.decorators import admin_required
 from app.admin.forms import AdminManageTaskForm, AdminAddDatasetForm
-from app.models import User, Dataset, Task
+from app.models import User, Dataset, Task, Annotation
 
 
 @bp.route("/manage", methods=("GET", "POST"))
@@ -60,6 +60,9 @@ def manage():
                 flash("Task assignment already exists.")
                 return redirect(url_for("admin.manage"))
             else:
+                # delete annotations too
+                for ann in Annotation.query.filter_by(task_id=task.id).all():
+                    db.session.delete(ann)
                 db.session.delete(task)
                 db.session.commit()
                 flash("Task deleted successfully.")

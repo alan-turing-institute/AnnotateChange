@@ -1,30 +1,55 @@
 {% extends "base.html" %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='user_index.css')}}">
+{% endblock %}
+
 {% block app_content %}
 {% if current_user.is_authenticated %}
 	<h1>Hi, {{ current_user.username }}!</h1>
-	<br>
-	Below are the annotation tasks we've asked you to do, thank you so much for 
-	your help!
-	<br>
 	{% if tasks_todo %}
 	<h2>Annotations to be done</h2>
+	<br>
+	<p>
+	Below are the datasets that we've asked you to annotate, thank you 
+	very much for your help!
+	</p>
+	<br>
 	<div class="tasks-todo">
-		<ol>
-		{% for task in tasks_todo %}
-		<li><a href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a></li>
-		{% endfor %}
-		</ol>
+		<table class="table table-striped">
+			<thead class="thead-dark">
+				<th scope="col">Name</th>
+			</thead>
+			{% for task in tasks_todo %}
+			<tr>
+				<td><a href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a></td>
+			</tr>
+			{% endfor %}
+		</table>
 	</div>
 	{% else %}
-		<span>No more annotations to do, thanks for your help, you rock!</span>
+	<div id="done">
+		<img src="/static/done.png">
+		<span>No more annotations to do! Thank you so much for your 
+			help, <b>you rock!</b></span>
+	</div>
 	{% endif %}
 	{% if tasks_done %}
 	<h2>Completed Annotations</h2>
 	<div class="tasks-done">
-		{% for task in tasks_done %}
-			<a class="task-done" href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a>
-		{% endfor %}
+		<table class="table table-striped">
+			<thead>
+				<th scope="col">Name</th>
+				<th scope="col">Completed On</th>
+			</thead>
+			{% for task in tasks_done %}
+			<tr>
+				<td>{{ task.dataset.name }}</td>
+				<td>{{ task.annotated_on }}</td>
+			</tr>
+			{% endfor %}
+		</table>
 	</div>
 	{% endif %}
 {% else %}

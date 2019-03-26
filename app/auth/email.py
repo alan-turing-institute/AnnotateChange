@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from threading import Thread
-
 from flask import current_app, render_template
 
-from app import mail
-
+from app.email import send_email
 
 def send_password_reset_email(user):
     token = user.get_reset_password_token()

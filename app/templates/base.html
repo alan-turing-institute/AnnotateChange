@@ -1,4 +1,5 @@
 {% extends 'bootstrap/base.html' %}
+{% import "bootstrap/utils.html" as util %}
 
 {% block styles %}
 {{ super() }}
@@ -43,15 +44,8 @@
 
 {% block content %}
   <div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <ul class="flashes">
-      {% for category, message in messages %}
-      <li class="{{ category }}">{{ message}}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
+
+    {{ util.flashed_messages(dismissible=True) }}
 
     {% block app_content %}
     {% endblock %}

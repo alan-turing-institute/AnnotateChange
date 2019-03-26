@@ -50,6 +50,23 @@ class User(UserMixin, db.Model):
             return None
         return User.query.get(_id)
 
+    def get_email_confirmation_token(self, expires_in=3600):
+        return jwt.encode(
+            {"email": self.email, "exp": time.time() + expires_in},
+            current_app.config["SECRET_KEY"],
+            algorithm="HS256",
+        ).decode("utf-8")
+
+    @staticmethod
+    def verify_email_confirmation_token(token):
+        try:
+            _email = jwt.decode(
+                token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
+            )["email"]
+        except:
+            return None
+        return User.query.filter_by(email=_email).first()
+
 
 class Dataset(db.Model):
     id = db.Column(db.Integer, primary_key=True)

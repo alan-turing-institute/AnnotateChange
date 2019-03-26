@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from app import db
 from app.admin import bp
 from app.admin.datasets import get_name_from_dataset, md5sum
-from app.admin.decorators import admin_required
+from app.decorators import admin_required
 from app.admin.forms import AdminManageTaskForm, AdminAddDatasetForm
 from app.models import User, Dataset, Task, Annotation
 

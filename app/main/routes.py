@@ -3,9 +3,10 @@
 import datetime
 
 from flask import render_template, flash, url_for, redirect, request
-from flask_login import current_user, login_required
+from flask_login import current_user
 
 from app import db
+from app.decorators import login_required
 from app.main import bp
 from app.models import Annotation, Task
 from app.main.datasets import load_data_for_chart

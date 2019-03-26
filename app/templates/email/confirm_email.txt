@@ -1,0 +1,11 @@
+Dear {{ user.username }},
+
+Welcome to AnnotateChange!
+
+Please confirm your email by clicking on the following link:
+
+{{ url_for('auth.confirm_email', token=token, _external=True) }}
+
+Sincerely,
+
+The AnnotateChange Team

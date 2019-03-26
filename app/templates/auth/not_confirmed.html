@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Welcome to AnnotateChange</h1>
+<p>You have not yet confirmed your email address. Please check your inbox for 
+the confirmation email. The email might have landed in your spam folder.</p>
+<p>If you haven't received and email, please <a href="{{ url_for('auth.resend_confirmation') }}">click here</a> to resend it.</p>
+
+{% endblock %}

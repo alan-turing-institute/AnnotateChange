@@ -1,5 +1,10 @@
 {% extends 'bootstrap/base.html' %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+{% endblock %}
+
 {% block title %}
   {% if title %}{{ title }} -- AnnotateChange{% else %}Welcome to AnnotateChange{% endif %}
 {% endblock %}
@@ -38,11 +43,11 @@
 
 {% block content %}
   <div class="container">
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message}}</li>
+    <ul class="flashes">
+      {% for category, message in messages %}
+      <li class="{{ category }}">{{ message}}</li>
       {% endfor %}
     </ul>
     {% endif %}

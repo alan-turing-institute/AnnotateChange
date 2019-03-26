@@ -1,0 +1,11 @@
+.flashes .info {
+	color: blue;
+}
+
+.flashes .success {
+	color: green;
+}
+
+.flashes .error {
+	color: red;
+}

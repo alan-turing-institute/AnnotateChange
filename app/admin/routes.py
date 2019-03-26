@@ -27,11 +27,11 @@ def manage():
     if form.validate_on_submit():
         user = User.query.filter_by(id=form.username.data).first()
         if user is None:
-            flash("User does not exist.")
+            flash("User does not exist.", "error")
             return redirect(url_for("admin.manage"))
         dataset = Dataset.query.filter_by(id=form.dataset.data).first()
         if dataset is None:
-            flash("Dataset does not exist.")
+            flash("Dataset does not exist.", "error")
             return redirect(url_for("admin.manage"))
 
         action = None
@@ -40,7 +40,10 @@ def manage():
         elif form.delete.data:
             action = "delete"
         else:
-            flash("Internal error: no button is true but form was submitted.")
+            flash(
+                "Internal error: no button is true but form was submitted.",
+                "error",
+            )
             return redirect(url_for("admin.manage"))
 
         task = Task.query.filter_by(
@@ -48,16 +51,16 @@ def manage():
         ).first()
         if task is None:
             if action == "delete":
-                flash("Can't delete a task that doesn't exist.")
+                flash("Can't delete a task that doesn't exist.", "error")
                 return redirect(url_for("admin.manage"))
             else:
                 task = Task(annotator_id=user.id, dataset_id=dataset.id)
                 db.session.add(task)
                 db.session.commit()
-                flash("Task registered successfully.")
+                flash("Task registered successfully.", "success")
         else:
             if action == "assign":
-                flash("Task assignment already exists.")
+                flash("Task assignment already exists.", "error")
                 return redirect(url_for("admin.manage"))
             else:
                 # delete annotations too
@@ -65,7 +68,7 @@ def manage():
                     db.session.delete(ann)
                 db.session.delete(task)
                 db.session.commit()
-                flash("Task deleted successfully.")
+                flash("Task deleted successfully.", "success")
 
     tasks = Task.query.all()
     return render_template(
@@ -88,22 +91,22 @@ def add_dataset():
             tmp_dir, secure_filename(form.file_.data.filename)
         )
         if not os.path.exists(temp_filename):
-            flash("Internal error: temporary dataset disappeared.")
+            flash("Internal error: temporary dataset disappeared.", "error")
             return redirect(url_for("admin.add_dataset"))
         name = get_name_from_dataset(temp_filename)
         target_filename = os.path.join(dataset_dir, name + ".json")
         if os.path.exists(target_filename):
-            flash("Internal error: file already exists!")
+            flash("Internal error: file already exists!", "error")
             return redirect(url_for("admin.add_dataset"))
         os.rename(temp_filename, target_filename)
         if not os.path.exists(target_filename):
-            flash("Internal error: file moving failed")
+            flash("Internal error: file moving failed", "error")
             return redirect(url_for("admin.add_dataset"))
 
         dataset = Dataset(name=name, md5sum=md5sum(target_filename))
         db.session.add(dataset)
         db.session.commit()
-        flash("Dataset %r added successfully." % name)
+        flash("Dataset %r added successfully." % name, "success")
         return redirect(url_for("admin.add_dataset"))
     return render_template("admin/add.html", title="Add Dataset", form=form)
 

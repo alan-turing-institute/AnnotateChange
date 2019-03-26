@@ -52,7 +52,7 @@ def task(task_id):
         # get the json from the client
         annotation = request.get_json()
         if annotation["task"] != task_id:
-            flash("Internal error: task id doesn't match.")
+            flash("Internal error: task id doesn't match.", "error")
             return redirect(url_for(task_id=task_id))
 
         task = Task.query.filter_by(id=task_id).first()
@@ -80,12 +80,13 @@ def task(task_id):
         task.annotated_on = now
         db.session.commit()
 
-        flash("Your annotation has been recorded, thank you!")
+        flash("Your annotation has been recorded, thank you!", "success")
         return url_for("main.index")
 
     task = Task.query.filter_by(id=task_id).first()
     if task is None:
-        flash("No task with id %r has been assigned to you." % task_id)
+        flash("No task with id %r has been assigned to you." % task_id, 
+        "error")
         return redirect(url_for("main.index"))
     data = load_data_for_chart(task.dataset.name)
     return render_template(

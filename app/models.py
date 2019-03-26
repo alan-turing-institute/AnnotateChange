@@ -81,8 +81,7 @@ class Task(db.Model):
 
 class Annotation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    time_start = db.Column(db.Integer)
-    time_end = db.Column(db.Integer)
+    cp_index = db.Column(db.Integer)
 
     task = db.relation("Task")
     task_id = db.Column(db.Integer, db.ForeignKey("task.id"))

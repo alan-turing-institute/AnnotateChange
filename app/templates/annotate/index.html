@@ -7,21 +7,71 @@
 
 {% block app_content %}
 <h1>{{ task.dataset.name }}</h1>
-<div id="graph"></div>
 
-<div id="button" class="row">
-	<div class="col-md-3">
-		<button>Submit</button>
+<div id="rubric" class="row">
+	<div class="col-md-12">
+		<p>{{ rubric | safe }}</p>
 	</div>
 </div>
 
+<div id="graph"></div>
+
+<div id="wrap-buttons" class="row">
+	<div class="col-md-6 text-left">
+	<button class="btn btn-primary float-md-left" type="button" id="btn-reset">Reset</button>
+	</div>
+	<div class="col-md-6 text-right">
+	<button class="btn btn-warning float-md-right" type="button" id="btn-none">No Changepoints</button>
+	<button class="btn btn-success float-md-right" id="btn-submit" type="button">Submit</button>
+	</div>
+</div>
+<br>
+
+<!-- Modal -->
+<div class="modal fade" id="submitNoCPModal" tabindex="-1" role="dialog" aria-labelledby="submitNoCPModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="submitNoCPModalLongTitle">No Changepoints Selected</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	      Please use the "No Changepoints" button when you think there are no changepoints in the time series.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="NoCPYesCPModal" tabindex="-1" role="dialog" aria-labelledby="NoCPYesCPModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="NoCPYesCPModalLongTitle">Changepoints Selected</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	      There are selected changepoints, please click the Reset button before clicking the "No Changepoints" button.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <h3>Selected Changepoints</h3>
 <div id="changepoint-table">
 	<table id="cp-table" class="table table-striped">
 	</table>
 </div>
-
 
 {# Based on: https://github.com/benalexkeen/d3-flask-blog-post/blob/master/templates/index.html #}
 {# And: https://bl.ocks.org/mbostock/35964711079355050ff1 #}
@@ -44,7 +94,7 @@ var svg = d3.select("#graph")
 	.attr("width", divWidth)
 	.attr("height", divHeight);
 
-var margin = {top: 20, right: 20, bottom: 100, left: 100};
+var margin = {top: 20, right: 20, bottom: 50, left: 50};
 var width = +svg.attr("width") - margin.left - margin.right;
 var height = +svg.attr("height") - margin.top - margin.bottom;
 
@@ -155,7 +205,8 @@ function clicked(d, i) {
 function nozoom() {
   d3.event.preventDefault();
 }
-
+</script>
+<script>
 function updateTable() {
 	var changepoints = document.getElementsByClassName("changepoint");
 
@@ -167,6 +218,11 @@ function updateTable() {
 	var table = document.createElement('TABLE')
 	table.id = "cp-table";
 	table.className = "table table-striped";
+
+	if (changepoints.length == 0) {
+		myTableDiv.appendChild(table);
+		return;
+	}
 
 	var heading = new Array();
 	heading[0] = "#";
@@ -213,6 +269,77 @@ function updateTable() {
 	table.appendChild(body);
 	myTableDiv.appendChild(table);
 }
+</script>
+<script>
+// reset button
+var reset = document.getElementById("btn-reset");
+reset.onclick = function() {
+	var changepoints = d3.selectAll(".changepoint");
+	changepoints.each(function(d, i) {
+		var elem = d3.select(this);
+		elem.classed("changepoint", false);
+		elem.style("fill", "blue");
+	});
+	updateTable();
+}
 
+var nocp = document.getElementById("btn-none");
+nocp.onclick = function() {
+	var changepoints = document.getElementsByClassName("changepoint");
+	// validation
+	if (changepoints.length > 0) {
+		$('#NoCPYesCPModal').modal();
+		return;
+	}
+
+	var obj = {
+		task: {{ task.id }},
+		changepoints: null
+	};
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "");
+	xhr.withCredentials = true;
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.send(JSON.stringify(obj));
+};
+
+var submit = document.getElementById("btn-submit");
+submit.onclick = function() {
+	var changepoints = document.getElementsByClassName("changepoint");
+	// validation
+	if (changepoints.length === 0) {
+		$('#submitNoCPModal').modal();
+		return;
+	}
+
+	var obj = {};
+	obj["task"] = {{ task.id }};
+	obj["changepoints"] = [];
+	var i, cp;
+	for (i=0; i<changepoints.length; i++) {
+		cp = changepoints[i];
+		elem = {
+			id: i,
+			x: cp.getAttribute("data_X"),
+			y: cp.getAttribute("data_Y")
+		};
+		obj["changepoints"].push(elem);
+	}
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "");
+	xhr.withCredentials = true;
+	xhr.setRequestHeader("Content-Type", "application/json");
+	xhr.send(JSON.stringify(obj));
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == XMLHttpRequest.DONE) {
+			if (xhr.status === 200)
+				window.location.href = xhr.responseText;
+		} else {
+			console.log("Error: " + xhr.status);
+		}
+	};
+};
 </script>
 {% endblock %}

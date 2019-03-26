@@ -14,9 +14,9 @@ from app.admin.forms import AdminManageTaskForm, AdminAddDatasetForm
 from app.models import User, Dataset, Task, Annotation
 
 
-@bp.route("/manage", methods=("GET", "POST"))
+@bp.route("/manage/tasks", methods=("GET", "POST"))
 @admin_required
-def manage():
+def manage_tasks():
     user_list = [(u.id, u.username) for u in User.query.all()]
     dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
 
@@ -28,11 +28,11 @@ def manage():
         user = User.query.filter_by(id=form.username.data).first()
         if user is None:
             flash("User does not exist.", "error")
-            return redirect(url_for("admin.manage"))
+            return redirect(url_for("admin.manage_tasks"))
         dataset = Dataset.query.filter_by(id=form.dataset.data).first()
         if dataset is None:
             flash("Dataset does not exist.", "error")
-            return redirect(url_for("admin.manage"))
+            return redirect(url_for("admin.manage_tasks"))
 
         action = None
         if form.assign.data:
@@ -44,7 +44,7 @@ def manage():
                 "Internal error: no button is true but form was submitted.",
                 "error",
             )
-            return redirect(url_for("admin.manage"))
+            return redirect(url_for("admin.manage_tasks"))
 
         task = Task.query.filter_by(
             annotator_id=user.id, dataset_id=dataset.id
@@ -52,7 +52,7 @@ def manage():
         if task is None:
             if action == "delete":
                 flash("Can't delete a task that doesn't exist.", "error")
-                return redirect(url_for("admin.manage"))
+                return redirect(url_for("admin.manage_tasks"))
             else:
                 task = Task(annotator_id=user.id, dataset_id=dataset.id)
                 db.session.add(task)
@@ -61,7 +61,7 @@ def manage():
         else:
             if action == "assign":
                 flash("Task assignment already exists.", "error")
-                return redirect(url_for("admin.manage"))
+                return redirect(url_for("admin.manage_tasks"))
             else:
                 # delete annotations too
                 for ann in Annotation.query.filter_by(task_id=task.id).all():
@@ -70,7 +70,7 @@ def manage():
                 db.session.commit()
                 flash("Task deleted successfully.", "success")
 
-    tasks = Task.query.all()
+    tasks = Task.query.join(User, Task.user).order_by(User.username).all()
     return render_template(
         "admin/manage.html", title="Assign Task", form=form, tasks=tasks
     )

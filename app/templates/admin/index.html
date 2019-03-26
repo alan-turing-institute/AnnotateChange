@@ -4,10 +4,11 @@
 <h1>Admin Home</h1>
 <ul>
 	<li>
-		<a href="/admin/add">Add dataset</a>
+		<a href="{{ url_for("admin.add_dataset") }}">Add dataset</a>
 	</li>
 	<li>
-		<a href="/admin/manage">View and manage tasks</a>
+		<a href="{{ url_for("admin.manage_tasks") }}">View and manage 
+			tasks</a>
 	</li>
 </ul>
 {% endblock %}

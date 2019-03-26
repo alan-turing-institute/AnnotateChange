@@ -33,7 +33,6 @@ def login_required(func):
         elif not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
         elif not current_user.is_confirmed:
-            flash("hello world")
             return redirect(url_for("auth.not_confirmed"))
         return func(*args, **kwargs)
 

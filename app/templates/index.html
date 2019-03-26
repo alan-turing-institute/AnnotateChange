@@ -28,12 +28,15 @@
 			{% endfor %}
 		</table>
 	</div>
-	{% else %}
+	{% elif tasks_todo|length == 0 and tasks_done|length > 0 %}
 	<div id="done">
 		<img src="/static/done.png">
 		<span>No more annotations to do! Thank you so much for your 
 			help, <b>you rock!</b></span>
 	</div>
+	{% else %}
+	<span>There are no datasets for you to annotate at the moment, please 
+		check back again later. Thank you!</span>
 	{% endif %}
 	{% if tasks_done %}
 	<h2>Completed Annotations</h2>

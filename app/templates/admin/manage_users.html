@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Manage Users</h1>
+<br>
+<h1>User Overview</h1>
+<article class="overview">
+	<table class="table table-striped">
+		<thead class="thead-dark">
+			<th scope="col">ID</th>
+			<th scope="col">Username</th>
+      <th scope="col">Email</th>
+      <th scope="col">Confirmed</th>
+			<th scope="col">Last Active</th>
+      <th scope="col">Admin</th>
+		</thead>
+		{% for user in users %}
+		<tr>
+      <th scope="row">{{ user.id }}</th>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>{% if user.is_confirmed %}Yes{% else %}No{% endif %}</td>
+      <td>{{ user.last_active }}</td>
+      <td>{% if user.is_admin %}Yes{% else %}{% endif %}</td>
+    </tr>
+		{% endfor %}
+		</tr>
+	</table>
+</article>
+{% endblock %}

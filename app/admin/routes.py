@@ -75,6 +75,13 @@ def manage_tasks():
         "admin/manage.html", title="Assign Task", form=form, tasks=tasks
     )
 
+@bp.route("/manage/users", methods=("GET", "POST"))
+@admin_required
+def manage_users():
+    users = User.query.all()
+    return render_template(
+            "admin/manage_users.html", title="Manage Users", users=users)
+
 
 @bp.route("/add", methods=("GET", "POST"))
 @admin_required

@@ -52,3 +52,8 @@ class AdminAddDatasetForm(FlaskForm):
             raise ValidationError(
                 "A dataset with the name '%s' already exists." % name
             )
+
+
+class AdminManageDatasetsForm(FlaskForm):
+    dataset = SelectField("Dataset", coerce=int, validators=[InputRequired()])
+    delete = SubmitField("Delete")

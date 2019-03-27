@@ -10,7 +10,11 @@ from app import db
 from app.admin import bp
 from app.admin.datasets import get_name_from_dataset, md5sum
 from app.decorators import admin_required
-from app.admin.forms import AdminManageTaskForm, AdminAddDatasetForm
+from app.admin.forms import (
+    AdminManageTaskForm,
+    AdminAddDatasetForm,
+    AdminManageDatasetsForm,
+)
 from app.models import User, Dataset, Task, Annotation
 
 
@@ -85,9 +89,29 @@ def manage_users():
     )
 
 
-@bp.route("/manage/datasets", methods=("GET",))
+@bp.route("/manage/datasets", methods=("GET", "POST"))
 @admin_required
 def manage_datasets():
+    dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
+
+    form = AdminManageDatasetsForm()
+    form.dataset.choices = dataset_list
+
+    if form.validate_on_submit():
+        dataset = Dataset.query.filter_by(id=form.dataset.data).first()
+        if dataset is None:
+            flash("Dataset doesn't exist.", "error")
+            return redirect(url_for("admin.manage_datasets"))
+
+        tasks = Task.query.filter_by(dataset_id=dataset.id).all()
+        for task in tasks:
+            for ann in Annotation.query.filter_by(task_id=task.id).all():
+                db.session.delete(ann)
+            db.session.delete(task)
+        db.session.delete(dataset)
+        db.session.commit()
+        flash("Dataset deleted successfully.", "success")
+
     overview = []
     for dataset in Dataset.query.all():
         tasks = Task.query.filter_by(dataset_id=dataset.id).all()
@@ -105,6 +129,7 @@ def manage_datasets():
         "admin/manage_datasets.html",
         title="Manage Datasets",
         overview=overview,
+        form=form,
     )
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export FLASK_APP=annotate_change_v2.py
+export FLASK_APP=annotate_change.py
 export FLASK_ENV=development
 
 echo "FLASK_APP = ${FLASK_APP}"

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "annotate_change_v2"
+name = "annotate_change"
 version = "0.1.0"
 description = ""
 authors = ["Gertjan van den Burg <gertjanvandenburg@gmail.com>"]

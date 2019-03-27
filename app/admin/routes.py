@@ -103,6 +103,14 @@ def manage_datasets():
             flash("Dataset doesn't exist.", "error")
             return redirect(url_for("admin.manage_datasets"))
 
+        dataset_dir = os.path.join(
+            current_app.instance_path, current_app.config["DATASET_DIR"]
+        )
+        filename = os.path.join(dataset_dir, dataset.name + ".json")
+        if not os.path.exists(filename):
+            flash("Internal error: dataset file doesn't exist!", "error")
+            return redirect(url_for("admin.manage_datasets"))
+
         tasks = Task.query.filter_by(dataset_id=dataset.id).all()
         for task in tasks:
             for ann in Annotation.query.filter_by(task_id=task.id).all():
@@ -110,6 +118,7 @@ def manage_datasets():
             db.session.delete(task)
         db.session.delete(dataset)
         db.session.commit()
+        os.unlink(filename)
         flash("Dataset deleted successfully.", "success")
 
     overview = []

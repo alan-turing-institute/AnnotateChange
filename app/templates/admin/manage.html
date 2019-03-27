@@ -2,10 +2,17 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<h1>Manage Tasks</h1>
+<h1>Manage Tasks Automatically</h1>
 <div class="row">
 	<div class="col-md-4">
-		{{ wtf.quick_form(form, button_map={'assign': 'primary', 'delete': 'danger'}) }}
+		{{ wtf.quick_form(form_auto, button_map={'assign': 'success'}) }}
+	</div>
+</div>
+
+<h1>Manage Tasks Manually</h1>
+<div class="row">
+	<div class="col-md-4">
+		{{ wtf.quick_form(form_manual, button_map={'assign': 'primary', 'delete': 'danger'}) }}
 	</div>
 </div>
 <br>
@@ -14,16 +21,16 @@
 	<table class="table table-striped">
 		<thead class="thead-dark">
 			<th scope="col">Task ID</th>
-			<th scope="col">Username</th>
 			<th scope="col">Dataset Name</th>
+			<th scope="col">Username</th>
 			<th scope="col">Status</th>
 			<th scope="col">Completed On</th>
 		</thead>
 		{% for task in tasks %}
 		<tr>
 			<th scope="row">{{ task.id }}</th>
-			<td>{{ task.user.username }}</td>
 			<td>{{ task.dataset.name }}</td>
+			<td>{{ task.user.username }}</td>
 			<td>{% if task.done %}Completed{% else %}Pending{% endif %}</td>
 			<td>{% if task.done %}{{ task.annotated_on }}{% else %}{% endif %}</td>
 		</tr>

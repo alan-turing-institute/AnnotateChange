@@ -6,13 +6,25 @@ from flask import current_app
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 
-from wtforms import SubmitField, SelectField
-from wtforms.validators import ValidationError, InputRequired
+from wtforms import SubmitField, SelectField, IntegerField
+from wtforms.validators import ValidationError, InputRequired, NumberRange
 
 from werkzeug.utils import secure_filename
 
 from app.models import Dataset
 from app.admin.datasets import validate_dataset, get_name_from_dataset
+
+
+class AdminAutoAssignForm(FlaskForm):
+    max_per_user = IntegerField(
+        "Maximum Tasks per User", [NumberRange(min=0, max=10)],
+        default=5
+    )
+    num_per_dataset = IntegerField(
+        "Tasks per Dataset", [NumberRange(min=1, max=20)],
+        default=10
+    )
+    assign = SubmitField("Assign")
 
 
 class AdminManageTaskForm(FlaskForm):

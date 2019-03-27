@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import random
 
 from flask import render_template, flash, redirect, url_for, current_app
 
@@ -11,6 +12,7 @@ from app.admin import bp
 from app.admin.datasets import get_name_from_dataset, md5sum
 from app.decorators import admin_required
 from app.admin.forms import (
+    AdminAutoAssignForm,
     AdminManageTaskForm,
     AdminAddDatasetForm,
     AdminManageDatasetsForm,
@@ -21,31 +23,79 @@ from app.models import User, Dataset, Task, Annotation
 @bp.route("/manage/tasks", methods=("GET", "POST"))
 @admin_required
 def manage_tasks():
+    form_auto = AdminAutoAssignForm()
+
     user_list = [(u.id, u.username) for u in User.query.all()]
     dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
 
-    form = AdminManageTaskForm()
-    form.username.choices = user_list
-    form.dataset.choices = dataset_list
+    form_manual = AdminManageTaskForm()
+    form_manual.username.choices = user_list
+    form_manual.dataset.choices = dataset_list
 
-    if form.validate_on_submit():
-        user = User.query.filter_by(id=form.username.data).first()
+    if form_auto.validate_on_submit():
+        max_per_user = form_auto.max_per_user.data
+        num_per_dataset = form_auto.num_per_dataset.data
+
+        available_users = {}
+        for user in User.query.all():
+            user_tasks = Task.query.filter_by(annotator_id=user.id).all()
+            if len(user_tasks) < max_per_user:
+                available_users[user] = max_per_user - len(user_tasks)
+
+        if not available_users:
+            flash(
+                "All users already have at least %i tasks assigned to them."
+                % max_per_user,
+                "error",
+            )
+            return redirect(url_for("admin.manage_tasks"))
+
+        datasets_tbd = {}
+        for dataset in Dataset.query.all():
+            dataset_tasks = Task.query.filter_by(dataset_id=dataset.id).all()
+            if len(dataset_tasks) < num_per_dataset:
+                datasets_tbd[dataset] = num_per_dataset - len(dataset_tasks)
+
+        if not datasets_tbd:
+            flash(
+                "All datasets have at least the desired number (%i) of assigned tasks."
+                % num_per_dataset,
+                "info",
+            )
+            return redirect(url_for("admin.manage_tasks"))
+
+        datasets = list(datasets_tbd.keys())
+        random.shuffle(datasets)
+        for dataset in datasets:
+            available = [u for u, v in available_users.items() if v > 0]
+            tbd = min(len(available), datasets_tbd[dataset])
+            selected_users = random.sample(available, tbd)
+            for user in selected_users:
+                task = Task(annotator_id=user.id, dataset_id=dataset.id)
+                db.session.add(task)
+                db.session.commit()
+                available_users[user] -= 1
+                datasets_tbd[dataset] -= 1
+        flash("Automatic task assignment successful.", "success")
+
+    elif form_manual.validate_on_submit():
+        user = User.query.filter_by(id=form_manual.username.data).first()
         if user is None:
             flash("User does not exist.", "error")
             return redirect(url_for("admin.manage_tasks"))
-        dataset = Dataset.query.filter_by(id=form.dataset.data).first()
+        dataset = Dataset.query.filter_by(id=form_manual.dataset.data).first()
         if dataset is None:
             flash("Dataset does not exist.", "error")
             return redirect(url_for("admin.manage_tasks"))
 
         action = None
-        if form.assign.data:
+        if form_manual.assign.data:
             action = "assign"
-        elif form.delete.data:
+        elif form_manual.delete.data:
             action = "delete"
         else:
             flash(
-                "Internal error: no button is true but form was submitted.",
+                "Internal error: no button is true but form_manual was submitted.",
                 "error",
             )
             return redirect(url_for("admin.manage_tasks"))
@@ -74,9 +124,18 @@ def manage_tasks():
                 db.session.commit()
                 flash("Task deleted successfully.", "success")
 
-    tasks = Task.query.join(User, Task.user).order_by(User.username).all()
+    tasks = (
+        Task.query.join(User, Task.user)
+        .join(Dataset, Task.dataset)
+        .order_by(Dataset.name, User.username)
+        .all()
+    )
     return render_template(
-        "admin/manage.html", title="Assign Task", form=form, tasks=tasks
+        "admin/manage.html",
+        title="Assign Task",
+        form_auto=form_auto,
+        form_manual=form_manual,
+        tasks=tasks,
     )
 
 

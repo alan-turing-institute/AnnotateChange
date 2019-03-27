@@ -33,6 +33,7 @@ Author: Gertjan van den Burg
 
 """
 
+import re
 import json
 import hashlib
 
@@ -52,6 +53,9 @@ def validate_dataset(filename):
     for key in required_keys:
         if not key in data:
             return "Required key missing: %s" % key
+
+    if not re.fullmatch("\w+", data['name']):
+        return "Name can only contain characters in the set [a-zA-Z0-9_]"
 
     if len(data["series"]) != data["n_dim"]:
         return "Number of dimensions and number of series don't match"

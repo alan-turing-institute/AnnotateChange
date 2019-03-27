@@ -15,12 +15,12 @@ RUBRIC = """
 <i>Please mark all the points in the time series where an abrupt change in
  the behaviour of the series occurs.</i>
 <br>
+If there are no such points, please click the <u>no changepoints</u> button.
+When you're ready, please click the <u>submit</u> button.
 <br>
-If there are no such points, please click the "no changepoints" button.
-<br>
-When you're ready, please click the submit button.
 <br>
 <b>Note:</b> You can zoom and pan the graph if needed.
+<br>
 <br>
 Thank you!
 """

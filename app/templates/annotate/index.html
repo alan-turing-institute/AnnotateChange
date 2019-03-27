@@ -99,7 +99,7 @@ var width = +svg.attr("width") - margin.left - margin.right;
 var height = +svg.attr("height") - margin.top - margin.bottom;
 
 var zoom = d3.zoom()
-  .scaleExtent([1, 10])
+  .scaleExtent([1, 50])
   .translateExtent([[0, 0], [width, height]])
   .extent([[0, 0], [width, height]])
   .on("zoom", zoomed);

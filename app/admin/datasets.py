@@ -45,7 +45,7 @@ def validate_dataset(filename):
     with open(filename, "rb") as fid:
         try:
             data = json.load(fid)
-        except json.JSONDecoderError as err:
+        except json.JSONDecodeError as err:
             return "JSON decoding error: %s" % err.msg
 
     required_keys = ["name", "n_obs", "n_dim", "series"]

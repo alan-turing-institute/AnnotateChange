@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  annotatechange:
+    build: .
+    labels:
+      - "traefik.backend=annotatechange"
+      - "traefik.docker.network=web"
+      - "traefik.frontend.rule=Host:change.gertjanvandenburg.com"
+      - "traefik.port=80"
+    networks:
+      - web
+    volumes:
+      - ./persist/instance:/home/annotatechange/instance
+      - ./persist/mysql:/home/annotatechange/mysql
+
+networks:
+  web:
+    external: true

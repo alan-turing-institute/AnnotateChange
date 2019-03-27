@@ -86,8 +86,15 @@ def task(task_id):
 
     task = Task.query.filter_by(id=task_id).first()
     if task is None:
-        flash("No task with id %r has been assigned to you." % task_id, 
-        "error")
+        flash("No task with id %r exists." % task_id, "error")
+        return redirect(url_for("main.index"))
+    if not task.annotator_id == current_user.id:
+        flash(
+            "No task with id %r has been assigned to you." % task_id, "error"
+        )
+        return redirect(url_for("main.index"))
+    if task.done:
+        flash("It's not possible to edit annotations at the moment.")
         return redirect(url_for("main.index"))
     data = load_data_for_chart(task.dataset.name)
     return render_template(

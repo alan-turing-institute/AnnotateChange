@@ -2,18 +2,33 @@ version: '3'
 
 services:
   annotatechange:
-    build: .
+    image: gjjvdburg/annotatechange:latest
+    env_file: .env
     labels:
       - "traefik.backend=annotatechange"
       - "traefik.docker.network=web"
       - "traefik.frontend.rule=Host:change.gertjanvandenburg.com"
       - "traefik.port=80"
     networks:
+      - internal
       - web
+    depends_on:
+      - db
     volumes:
       - ./persist/instance:/home/annotatechange/instance
-      - ./persist/mysql:/home/annotatechange/mysql
+
+  db:
+    image: mysql
+    env_file: .db_env
+    volumes:
+      - ./persist/mysql:/var/lib/mysql
+    networks:
+      - internal
+    labels:
+      - "traefik.enable=false"
 
 networks:
   web:
     external: true
+  internal:
+    external: false

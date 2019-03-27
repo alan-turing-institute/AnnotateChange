@@ -33,5 +33,5 @@ ENV FLASK_APP annotate_change.py
 RUN chown -R annotate_change:annotate_change ./
 USER annotate_change
 
-EXPOSE 5000
+EXPOSE 80
 ENTRYPOINT ["./boot.sh"]

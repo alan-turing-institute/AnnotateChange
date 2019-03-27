@@ -302,6 +302,14 @@ nocp.onclick = function() {
 	xhr.withCredentials = true;
 	xhr.setRequestHeader("Content-Type", "application/json");
 	xhr.send(JSON.stringify(obj));
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == XMLHttpRequest.DONE) {
+			if (xhr.status === 200)
+				window.location.href = xhr.responseText;
+		} else {
+			console.log("Error: " + xhr.status);
+		}
+	};
 };
 
 var submit = document.getElementById("btn-submit");

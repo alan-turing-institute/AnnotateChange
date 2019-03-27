@@ -12,7 +12,8 @@ from app.models import Annotation, Task
 from app.main.datasets import load_data_for_chart
 
 RUBRIC = """
-<i>Please mark all the points in the time series where an abrupt change in
+<i>Please mark all the points in the time series where an <b>abrupt change</b> 
+in
  the behaviour of the series occurs.</i>
 <br>
 If there are no such points, please click the <u>no changepoints</u> button.

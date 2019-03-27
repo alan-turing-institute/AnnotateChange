@@ -75,12 +75,37 @@ def manage_tasks():
         "admin/manage.html", title="Assign Task", form=form, tasks=tasks
     )
 
+
 @bp.route("/manage/users", methods=("GET", "POST"))
 @admin_required
 def manage_users():
     users = User.query.all()
     return render_template(
-            "admin/manage_users.html", title="Manage Users", users=users)
+        "admin/manage_users.html", title="Manage Users", users=users
+    )
+
+
+@bp.route("/manage/datasets", methods=("GET",))
+@admin_required
+def manage_datasets():
+    overview = []
+    for dataset in Dataset.query.all():
+        tasks = Task.query.filter_by(dataset_id=dataset.id).all()
+        n_complete = len([t for t in tasks if t.done])
+        perc = n_complete / len(tasks) * 100
+        entry = {
+            "id": dataset.id,
+            "name": dataset.name,
+            "assigned": len(tasks),
+            "completed": n_complete,
+            "percentage": perc,
+        }
+        overview.append(entry)
+    return render_template(
+        "admin/manage_datasets.html",
+        title="Manage Datasets",
+        overview=overview,
+    )
 
 
 @bp.route("/add", methods=("GET", "POST"))

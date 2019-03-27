@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Manage Datasets</h1>
+<br>
+<h1>Task Completion Overview</h1>
+<article class="overview">
+	<table class="table table-striped">
+		<thead class="thead-dark">
+			<th scope="col">ID</th>
+			<th scope="col">Name</th>
+      <th scope="col">Assigned Tasks</th>
+      <th scope="col">Completed Tasks</th>
+      <th scope="col">Percentage</th>
+		</thead>
+		{% for entry in overview %}
+		<tr>
+      <th scope="row">{{ entry['id'] }}</th>
+      <td>{{ entry['name'] }}</td>
+      <td>{{ entry['assigned'] }}</td>
+      <td>{{ entry['completed'] }}</td>
+      <td>{{ entry['percentage'] }}</td>
+    </tr>
+		{% endfor %}
+		</tr>
+	</table>
+</article>
+{% endblock %}

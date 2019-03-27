@@ -25,7 +25,7 @@
 			<td>{{ task.user.username }}</td>
 			<td>{{ task.dataset.name }}</td>
 			<td>{% if task.done %}Completed{% else %}Pending{% endif %}</td>
-			<td>{{ task.annotated_on }}</td>
+			<td>{% if task.done %}{{ task.annotated_on }}{% else %}{% endif %}</td>
 		</tr>
 		{% endfor %}
 		</tr>

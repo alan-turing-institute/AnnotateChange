@@ -54,7 +54,7 @@ def validate_dataset(filename):
         if not key in data:
             return "Required key missing: %s" % key
 
-    if not re.fullmatch("\w+", data['name']):
+    if not re.fullmatch("\w+", data["name"]):
         return "Name can only contain characters in the set [a-zA-Z0-9_]"
 
     if len(data["series"]) != data["n_dim"]:

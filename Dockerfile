@@ -1,5 +1,8 @@
 FROM python:3.6-alpine
 
+# This Dockerfile is based on:
+# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xix-deployment-on-docker-containers
+
 RUN adduser -D annotatechange
 
 WORKDIR /home/annotatechange
@@ -7,7 +10,7 @@ WORKDIR /home/annotatechange
 # See: https://stackoverflow.com/q/53835198/
 ARG YOUR_ENV
 ENV YOUR_ENV=${YOUR_ENV} \
-	     PYTHONFAULTHANDLER=1 \
+	PYTHONFAULTHANDLER=1 \
 	PYTHONUNBUFFERED=1\
 	PYTHONHASHSEED=random \
 	PIP_NO_CACHE_DIR=off \
@@ -30,8 +33,8 @@ RUN chmod +x boot.sh
 
 ENV FLASK_APP annotate_change.py
 
-RUN chown -R annotate_change:annotate_change ./
-USER annotate_change
+RUN chown -R annotatechange:annotatechange ./
+USER annotatechange
 
 EXPOSE 80
 ENTRYPOINT ["./boot.sh"]

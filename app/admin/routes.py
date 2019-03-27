@@ -168,6 +168,23 @@ def add_dataset():
     return render_template("admin/add.html", title="Add Dataset", form=form)
 
 
+@bp.route("/annotations", methods=("GET",))
+@admin_required
+def view_annotations():
+    annotations = (
+        Annotation.query.join(Task, Annotation.task)
+        .join(User, Task.user)
+        .join(Dataset, Task.dataset)
+        .order_by(Dataset.name, User.username, Annotation.cp_index)
+        .all()
+    )
+    return render_template(
+        "admin/annotations.html",
+        title="View Annotations",
+        annotations=annotations,
+    )
+
+
 @bp.route("/", methods=("GET",))
 @admin_required
 def index():

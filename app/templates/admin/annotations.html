@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>View Annotations</h1>
+<article class="overview">
+	<table class="table table-striped">
+		<thead class="thead-dark">
+      <th scope="col">Dataset</th>
+			<th scope="col">Username</th>
+      <th scope="col">Changepoint Index</th>
+    </thead>
+    {% for ann in annotations %}
+		<tr>
+      <td>{{ ann.task.dataset.name }}</td>
+      <td>{{ ann.task.user.username }}</td>
+      <td>{% if ann.cp_index is none %}No CP{% else %}{{ ann.cp_index }}{% endif %}</td>
+    </tr>
+		{% endfor %}
+		</tr>
+	</table>
+</article>
+{% endblock %}

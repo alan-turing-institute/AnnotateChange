@@ -26,7 +26,9 @@ def manage_tasks():
     form_auto = AdminAutoAssignForm()
 
     user_list = [(u.id, u.username) for u in User.query.all()]
-    dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
+    dataset_list = [
+        (d.id, d.name) for d in Dataset.query.order_by(Dataset.name).all()
+    ]
 
     form_manual = AdminManageTaskForm()
     form_manual.username.choices = user_list
@@ -76,6 +78,11 @@ def manage_tasks():
                 db.session.commit()
                 available_users[user] -= 1
                 datasets_tbd[dataset] -= 1
+        if any((datasets_tbd[d] > 0 for d in datasets)):
+            flash(
+                "Insufficient users available for the desired number of tasks per dataset.",
+                "info",
+            )
         flash("Automatic task assignment successful.", "success")
 
     elif form_manual.validate_on_submit():

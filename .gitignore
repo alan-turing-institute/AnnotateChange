@@ -1,3 +1,5 @@
 app/__pycache__
 migrations/__pycache__
 __pycache__/
+.env.development
+.env.production

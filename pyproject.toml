@@ -14,9 +14,9 @@ flask-login = "^0.4.1"
 flask-mail = "^0.9.1"
 pyjwt = "^1.7"
 flask-bootstrap = "^3.3"
-python-dotenv = "^0.10.1"
 email_validator = "^1.0"
 gunicorn = "^19.9"
+pymysql = "^0.9.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

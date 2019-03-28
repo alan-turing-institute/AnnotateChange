@@ -1,7 +1,6 @@
 #!/bin/bash
 
-export FLASK_APP=annotate_change.py
-export FLASK_ENV=development
+export $(grep -v '^#' .env.development | xargs -d '\n')
 
 echo "FLASK_APP = ${FLASK_APP}"
 echo "FLASK_ENV = ${FLASK_ENV}"

@@ -32,7 +32,7 @@ def manage_tasks():
     form_manual.username.choices = user_list
     form_manual.dataset.choices = dataset_list
 
-    if form_auto.validate_on_submit():
+    if form_auto.validate_on_submit() and form_auto.assign.data:
         max_per_user = form_auto.max_per_user.data
         num_per_dataset = form_auto.num_per_dataset.data
 

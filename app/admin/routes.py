@@ -191,7 +191,10 @@ def manage_datasets():
     for dataset in Dataset.query.all():
         tasks = Task.query.filter_by(dataset_id=dataset.id).all()
         n_complete = len([t for t in tasks if t.done])
-        perc = n_complete / len(tasks) * 100
+        if len(tasks) == 0:
+            perc = float('nan')
+        else:
+            perc = n_complete / len(tasks) * 100
         entry = {
             "id": dataset.id,
             "name": dataset.name,

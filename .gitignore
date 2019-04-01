@@ -3,3 +3,5 @@ migrations/__pycache__
 __pycache__/
 .env.development
 .env.production
+instance/
+*.egg-info

@@ -8,7 +8,7 @@ services:
       - "traefik.backend=annotatechange"
       - "traefik.docker.network=web"
       - "traefik.frontend.rule=Host:change.gertjanvandenburg.com"
-      - "traefik.port=80"
+      - "traefik.port=7831"
     networks:
       - internal
       - web
@@ -19,7 +19,7 @@ services:
 
   db:
     image: mysql
-    env_file: .db_env
+    env_file: .env
     volumes:
       - ./persist/mysql:/var/lib/mysql
     networks:

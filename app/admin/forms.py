@@ -69,3 +69,7 @@ class AdminAddDatasetForm(FlaskForm):
 class AdminManageDatasetsForm(FlaskForm):
     dataset = SelectField("Dataset", coerce=int, validators=[InputRequired()])
     delete = SubmitField("Delete")
+
+class AdminManageUsersForm(FlaskForm):
+    user = SelectField("User", coerce=int, validators=[InputRequired()])
+    delete = SubmitField("Delete")

@@ -16,6 +16,7 @@ from app.admin.forms import (
     AdminManageTaskForm,
     AdminAddDatasetForm,
     AdminManageDatasetsForm,
+    AdminManageUsersForm,
 )
 from app.models import User, Dataset, Task, Annotation
 from app.utils.tasks import generate_auto_assign_tasks
@@ -113,8 +114,28 @@ def manage_tasks():
 @admin_required
 def manage_users():
     users = User.query.all()
+    user_list = [(u.id, u.username) for u in users]
+
+    form = AdminManageUsersForm()
+    form.user.choices = user_list
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(id=form.user.data).first()
+        if user is None:
+            flash("User doesn't exist.", "error")
+            return redirect(url_for("admin.manage_users"))
+
+        tasks = Task.query.filter_by(annotator_id=user.id).all()
+        for task in tasks:
+            for ann in Annotation.query.filter_by(task_id=task.id).all():
+                db.session.delete(ann)
+            db.session.delete(task)
+        db.session.delete(user)
+        db.session.commit()
+        flash("User deleted successfully.", "success")
+        return redirect(url_for("admin.manage_users"))
     return render_template(
-        "admin/manage_users.html", title="Manage Users", users=users
+        "admin/manage_users.html", title="Manage Users", users=users, form=form
     )
 
 

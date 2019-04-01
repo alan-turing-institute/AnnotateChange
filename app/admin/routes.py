@@ -113,7 +113,7 @@ def manage_tasks():
 @admin_required
 def manage_users():
     users = User.query.all()
-    user_list = [(u.id, u.username) for u in users]
+    user_list = [(u.id, u.username) for u in users if not u.is_admin]
 
     form = AdminManageUsersForm()
     form.user.choices = user_list

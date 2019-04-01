@@ -28,6 +28,9 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    # Set the app version in the config (we use it in templates)
+    app.config['APP_VERSION'] = __version__
+
     # Initialize all extensions
     db.init_app(app)
     migrate.init_app(app, db)

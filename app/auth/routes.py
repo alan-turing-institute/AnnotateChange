@@ -16,12 +16,11 @@ from app.auth.forms import (
     ResetPasswordRequestForm,
     ResetPasswordForm,
 )
-from app.decorators import login_required
-from app.models import User
 from app.auth.email import (
     send_password_reset_email,
     send_email_confirmation_email,
 )
+from app.models import User
 from app.utils.tasks import create_initial_user_tasks
 
 
@@ -70,7 +69,7 @@ def register():
             "info",
         )
 
-        return redirect(url_for("auth.not_confirmed"))
+        return redirect(url_for("auth.login"))
     return render_template("auth/register.html", title="Register", form=form)
 
 

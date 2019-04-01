@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import random
 
 from flask import render_template, flash, redirect, url_for, current_app
 
@@ -176,7 +175,7 @@ def manage_datasets():
         tasks = Task.query.filter_by(dataset_id=dataset.id).all()
         n_complete = len([t for t in tasks if t.done])
         if len(tasks) == 0:
-            perc = float('nan')
+            perc = float("nan")
         else:
             perc = n_complete / len(tasks) * 100
         entry = {

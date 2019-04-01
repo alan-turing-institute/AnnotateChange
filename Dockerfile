@@ -1,9 +1,12 @@
-FROM python:3.6-alpine
+FROM python:3.7-alpine
+
+RUN apk add gcc musl-dev libffi-dev openssl-dev
 
 # This Dockerfile is based on:
 # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xix-deployment-on-docker-containers
 
-RUN adduser -D annotatechange
+RUN addgroup --gid 1024 mygroup
+RUN adduser --ingroup mygroup -D annotatechange
 
 WORKDIR /home/annotatechange
 
@@ -20,7 +23,7 @@ ENV YOUR_ENV=${YOUR_ENV} \
 
 RUN pip install "poetry==$POETRY_VERSION"
 
-COPY poetry.lock pyproject.toml /home/annotatechange
+COPY poetry.lock pyproject.toml /home/annotatechange/
 
 RUN poetry config settings.virtualenvs.create false \
 	    && poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") \
@@ -33,8 +36,13 @@ RUN chmod +x boot.sh
 
 ENV FLASK_APP annotate_change.py
 
-RUN chown -R annotatechange:annotatechange ./
+RUN mkdir -p /home/annotatechange/instance
+VOLUME /home/annotatechange/instance
+
+RUN ls -lh /home/annotatechange/instance
+
+RUN chown -R annotatechange:mygroup /home/annotatechange
 USER annotatechange
 
-EXPOSE 80
+EXPOSE 7831
 ENTRYPOINT ["./boot.sh"]

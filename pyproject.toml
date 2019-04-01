@@ -17,6 +17,7 @@ flask-bootstrap = "^3.3"
 email_validator = "^1.0"
 gunicorn = "^19.9"
 pymysql = "^0.9.3"
+cryptography = "^2.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^3.0"

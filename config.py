@@ -17,11 +17,11 @@ class Config(object):
     DB_TYPE = os.environ.get("DB_TYPE") or "sqlite3"
     if DB_TYPE == "mysql":
         SQLALCHEMY_DATABASE_URI = "mysql+pymysql://{username}:{password}@{host}:{port}/{database}".format(
-            username=os.environ.get("MYSQL_USER"),
-            password=os.environ.get("MYSQL_PASSWORD"),
-            host=os.environ.get("MYSQL_HOST"),
-            port=os.environ.get("MYSQL_PORT"),
-            database=os.environ.get("MYSQL_DATABASE"),
+            username=os.environ.get("AC_MYSQL_USER"),
+            password=os.environ.get("AC_MYSQL_PASSWORD"),
+            host=os.environ.get("AC_MYSQL_HOST"),
+            port=os.environ.get("AC_MYSQL_PORT"),
+            database=os.environ.get("AC_MYSQL_DATABASE"),
         )
     else:
         SQLALCHEMY_DATABASE_URI = "sqlite:///{filepath}".format(

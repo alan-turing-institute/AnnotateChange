@@ -46,3 +46,7 @@ class Config(object):
     # these should be used relative to the instance path
     DATASET_DIR = "datasets"
     TEMP_DIR = "tmp"
+
+    # task distribution settings
+    TASKS_MAX_PER_USER = 5
+    TASKS_NUM_PER_DATASET = 10

@@ -18,6 +18,7 @@ from app.admin.forms import (
     AdminManageDatasetsForm,
 )
 from app.models import User, Dataset, Task, Annotation
+from app.utils.tasks import generate_auto_assign_tasks
 
 
 @bp.route("/manage/tasks", methods=("GET", "POST"))
@@ -38,53 +39,15 @@ def manage_tasks():
         max_per_user = form_auto.max_per_user.data
         num_per_dataset = form_auto.num_per_dataset.data
 
-        available_users = {}
-        for user in User.query.all():
-            user_tasks = Task.query.filter_by(annotator_id=user.id).all()
-            if len(user_tasks) < max_per_user:
-                available_users[user] = max_per_user - len(user_tasks)
-
-        if not available_users:
-            flash(
-                "All users already have at least %i tasks assigned to them."
-                % max_per_user,
-                "error",
-            )
-            return redirect(url_for("admin.manage_tasks"))
-
-        datasets_tbd = {}
-        for dataset in Dataset.query.all():
-            dataset_tasks = Task.query.filter_by(dataset_id=dataset.id).all()
-            if len(dataset_tasks) < num_per_dataset:
-                datasets_tbd[dataset] = num_per_dataset - len(dataset_tasks)
-
-        if not datasets_tbd:
-            flash(
-                "All datasets have at least the desired number (%i) of assigned tasks."
-                % num_per_dataset,
-                "info",
-            )
-            return redirect(url_for("admin.manage_tasks"))
-
-        datasets = list(datasets_tbd.keys())
-        random.shuffle(datasets)
-        for dataset in datasets:
-            available = [u for u, v in available_users.items() if v > 0]
-            tbd = min(len(available), datasets_tbd[dataset])
-            selected_users = random.sample(available, tbd)
-            for user in selected_users:
-                task = Task(annotator_id=user.id, dataset_id=dataset.id)
-                db.session.add(task)
-                db.session.commit()
-                available_users[user] -= 1
-                datasets_tbd[dataset] -= 1
-        if any((datasets_tbd[d] > 0 for d in datasets)):
-            flash(
-                "Insufficient users available for the desired number of tasks per dataset.",
-                "info",
-            )
+        for task, error in generate_auto_assign_tasks(
+            max_per_user, num_per_dataset
+        ):
+            if task is None:
+                flash(error, "error")
+                return redirect(url_for("admin.manage_tasks"))
+            db.session.add(task)
+            db.session.commit()
         flash("Automatic task assignment successful.", "success")
-
     elif form_manual.validate_on_submit():
         user = User.query.filter_by(id=form_manual.username.data).first()
         if user is None:

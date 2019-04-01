@@ -22,6 +22,7 @@ from app.auth.email import (
     send_password_reset_email,
     send_email_confirmation_email,
 )
+from app.utils.tasks import create_initial_user_tasks
 
 
 @bp.route("/login", methods=("GET", "POST"))
@@ -122,7 +123,13 @@ def confirm_email(token):
     else:
         user.is_confirmed = True
         db.session.commit()
+        for task in create_initial_user_tasks(user):
+            if task is None:
+                break
+            db.session.add(task)
+            db.session.commit()
         flash("Account confirmed successfully. Thank you!", "success")
+        return redirect(url_for("auth.login"))
     return redirect(url_for("main.index"))
 
 

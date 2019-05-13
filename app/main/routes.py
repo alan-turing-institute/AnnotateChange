@@ -30,6 +30,8 @@ Thank you!
 @bp.route("/")
 @bp.route("/index")
 def index():
+    if not current_user.is_anonymous and not current_user.is_confirmed:
+        return redirect(url_for("auth.not_confirmed"))
     if current_user.is_authenticated:
         user_id = current_user.id
         tasks = Task.query.filter_by(annotator_id=user_id).all()

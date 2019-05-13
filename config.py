@@ -50,3 +50,15 @@ class Config(object):
     # task distribution settings
     TASKS_MAX_PER_USER = 5
     TASKS_NUM_PER_DATASET = 10
+
+    # user emails allowed
+    USER_EMAIL_DOMAINS = os.environ.get("USER_EMAIL_DOMAINS") or ""
+    USER_EMAIL_DOMAINS = [
+        x.split() for x in USER_EMAIL_DOMAINS.split(";")
+    ]
+    USER_EMAIL_DOMAINS = (
+        None if not USER_EMAIL_DOMAINS else USER_EMAIL_DOMAINS
+    )
+    USER_EMAILS = os.environ.get("USER_EMAILS") or ""
+    USER_EMAILS = [x.split() for x in USER_EMAILS.split(";")]
+    USER_EMAILS = None if not USER_EMAILS else USER_EMAILS

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from flask import current_app
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -37,6 +38,19 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(
                 "Email address already in use, please use a different one."
             )
+        if current_app.config["USER_EMAILS"]:
+            if email.data in current_app.config["USER_EMAILS"]:
+                return
+        if current_app.config["USER_EMAIL_DOMAINS"]:
+            if not email.data in current_app.config["USER_EMAIL_DOMAINS"]:
+                raise ValidationError(
+                    "Access to AnnotateChange is restricted to "
+                    "individuals with email addresses from specific "
+                    "institutions. Please use your employee email address "
+                    "when signing up. If that does not solve the issue, "
+                    "you unfortunately do not have access to "
+                    "AnnotateChange at this time."
+                )
 
 
 class ResetPasswordRequestForm(FlaskForm):

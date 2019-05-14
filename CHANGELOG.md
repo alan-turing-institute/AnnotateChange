@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.1.4
+
+* Bugfix for admin annotation view
+
 ## Version 0.1.3
 
 * Add admin view of annotations

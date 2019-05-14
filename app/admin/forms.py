@@ -17,12 +17,10 @@ from app.admin.datasets import validate_dataset, get_name_from_dataset
 
 class AdminAutoAssignForm(FlaskForm):
     max_per_user = IntegerField(
-        "Maximum Tasks per User", [NumberRange(min=0, max=10)],
-        default=5
+        "Maximum Tasks per User", [NumberRange(min=0, max=10)], default=5
     )
     num_per_dataset = IntegerField(
-        "Tasks per Dataset", [NumberRange(min=1, max=20)],
-        default=10
+        "Tasks per Dataset", [NumberRange(min=1, max=20)], default=10
     )
     assign = SubmitField("Assign")
 

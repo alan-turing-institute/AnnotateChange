@@ -16,9 +16,11 @@ from app.admin.forms import (
     AdminAddDatasetForm,
     AdminManageDatasetsForm,
     AdminManageUsersForm,
+    AdminSelectDatasetForm,
 )
 from app.models import User, Dataset, Task, Annotation
 from app.utils.tasks import generate_auto_assign_tasks
+from app.main.datasets import load_data_for_chart
 
 
 @bp.route("/manage/tasks", methods=("GET", "POST"))
@@ -229,9 +231,22 @@ def add_dataset():
     return render_template("admin/add.html", title="Add Dataset", form=form)
 
 
-@bp.route("/annotations", methods=("GET",))
+@bp.route("/annotations", methods=("GET", "POST"))
 @admin_required
 def view_annotations():
+    dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
+    form = AdminSelectDatasetForm()
+    form.dataset.choices = dataset_list
+
+    if form.validate_on_submit():
+        dataset = Dataset.query.filter_by(id=form.dataset.data).first()
+        if dataset is None:
+            flash("Dataset does not exist.", "error")
+            return redirect(url_for("admin.view_annotations"))
+        return redirect(
+            url_for("admin.view_annotations_by_dataset", dset_id=dataset.id)
+        )
+
     annotations = (
         Annotation.query.join(Task, Annotation.task)
         .join(User, Task.user)
@@ -243,6 +258,43 @@ def view_annotations():
         "admin/annotations.html",
         title="View Annotations",
         annotations=annotations,
+        form=form,
+    )
+
+
+@bp.route("/annotations_by_dataset/<int:dset_id>", methods=("GET",))
+@admin_required
+def view_annotations_by_dataset(dset_id):
+    dataset = Dataset.query.filter_by(id=dset_id).first()
+    annotations = (
+        Annotation.query.join(Task, Annotation.task)
+        .join(User, Task.user)
+        .join(Dataset, Task.dataset)
+        .order_by(Dataset.name, User.username, Annotation.cp_index)
+        .all()
+    )
+
+    annotations = [a for a in annotations if a.task.dataset.id == dset_id]
+
+    anno_clean = []
+    user_counter = {}
+    counter = 1
+    for ann in annotations:
+        if ann.task.user.id in user_counter:
+            uid = user_counter[ann.task.user.id]
+        else:
+            uid = user_counter.setdefault(
+                ann.task.user.id, "user-%i" % counter
+            )
+            counter += 1
+        anno_clean.append(dict(user=uid, index=ann.cp_index))
+
+    data = load_data_for_chart(dataset.name)
+    data["annotations"] = anno_clean
+    return render_template(
+        "admin/annotations_by_dataset.html",
+        title="View Annotations for dataset",
+        data=data,
     )
 
 

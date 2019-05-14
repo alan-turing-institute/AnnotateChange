@@ -1,0 +1,60 @@
+#graph {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.line {
+	fill: none;
+	stroke: blue;
+	clip-path: url(#clip);
+}
+
+.ann-line {
+	fill: none;
+	stroke-dasharray: 3,3;
+	clip-path: url(#clip);
+}
+
+circle {
+	clip-path: url(#clip);
+	fill: blue;
+}
+
+rect {
+	fill: white;
+	opacity: 0;
+}
+
+.user-1 {
+	fill: #66c2a5;
+	stroke: #66c2a5;
+}
+
+.user-2 {
+	fill: #fc8d62;
+}
+
+.user-3 {
+	fill: #8da0cb;
+}
+
+.user-4 {
+	fill: #e78ac3;
+}
+
+.user-5 {
+	fill: #a6d854;
+}
+
+.user-6 {
+	fill: #ffd92f;
+}
+
+.user-7 {
+	fill: #e5c494;
+}
+
+.user-8 {
+	fill: #b3b3b3;
+}
+

@@ -42,7 +42,10 @@ class RegistrationForm(FlaskForm):
             if email.data in current_app.config["USER_EMAILS"]:
                 return
         if current_app.config["USER_EMAIL_DOMAINS"]:
-            if not email.data in current_app.config["USER_EMAIL_DOMAINS"]:
+            if (
+                not email.data.split("@")[-1]
+                in current_app.config["USER_EMAIL_DOMAINS"]
+            ):
                 raise ValidationError(
                     "Access to AnnotateChange is restricted to "
                     "individuals with email addresses from specific "

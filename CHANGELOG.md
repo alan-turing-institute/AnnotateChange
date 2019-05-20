@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.1.5
+
+* Bugfix for registration restriction
+
 ## Version 0.1.4
 
 * Bugfix for admin annotation view

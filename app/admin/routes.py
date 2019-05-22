@@ -8,7 +8,6 @@ from werkzeug.utils import secure_filename
 
 from app import db
 from app.admin import bp
-from app.admin.datasets import get_name_from_dataset, md5sum
 from app.decorators import admin_required
 from app.admin.forms import (
     AdminAutoAssignForm,
@@ -19,6 +18,7 @@ from app.admin.forms import (
     AdminSelectDatasetForm,
 )
 from app.models import User, Dataset, Task, Annotation
+from app.utils.datasets import get_name_from_dataset, md5sum, dataset_is_demo
 from app.utils.tasks import generate_auto_assign_tasks
 from app.main.datasets import load_data_for_chart
 

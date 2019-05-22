@@ -12,7 +12,7 @@ from wtforms.validators import ValidationError, InputRequired, NumberRange
 from werkzeug.utils import secure_filename
 
 from app.models import Dataset
-from app.admin.datasets import validate_dataset, get_name_from_dataset
+from app.utils.datasets import validate_dataset, get_name_from_dataset
 
 
 class AdminAutoAssignForm(FlaskForm):

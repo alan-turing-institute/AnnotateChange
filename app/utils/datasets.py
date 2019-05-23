@@ -33,9 +33,15 @@ Author: Gertjan van den Burg
 
 """
 
-import re
-import json
 import hashlib
+import json
+import logging
+import os
+import re
+
+from flask import current_app
+
+logger = logging.getLogger(__file__)
 
 
 def validate_dataset(filename):
@@ -99,3 +105,24 @@ def md5sum(filename):
             hasher.update(buf)
             buf = fid.read(blocksize)
     return hasher.hexdigest()
+
+
+def load_data_for_chart(name, known_md5):
+    dataset_dir = os.path.join(
+        current_app.instance_path, current_app.config["DATASET_DIR"]
+    )
+    target_filename = os.path.join(dataset_dir, name + ".json")
+    if not md5sum(target_filename) == known_md5:
+        logger.error(
+            """
+        MD5 checksum failed for dataset with name: %s.
+        Found: %s.
+        Expected: %s.
+        """
+            % (name, md5sum(target_filename), known_md5)
+        )
+        return None
+    with open(target_filename, "rb") as fid:
+        data = json.load(fid)
+    chart_data = [{"value": x} for x in data["series"]["V1"]["raw"]]
+    return {"chart_data": chart_data}

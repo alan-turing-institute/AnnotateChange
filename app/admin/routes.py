@@ -18,9 +18,13 @@ from app.admin.forms import (
     AdminSelectDatasetForm,
 )
 from app.models import User, Dataset, Task, Annotation
-from app.utils.datasets import get_name_from_dataset, md5sum, dataset_is_demo
+from app.utils.datasets import (
+    get_name_from_dataset,
+    md5sum,
+    dataset_is_demo,
+    load_data_for_chart,
+)
 from app.utils.tasks import generate_auto_assign_tasks
-from app.main.datasets import load_data_for_chart
 
 
 @bp.route("/manage/tasks", methods=("GET", "POST"))
@@ -289,7 +293,7 @@ def view_annotations_by_dataset(dset_id):
             counter += 1
         anno_clean.append(dict(user=uid, index=ann.cp_index))
 
-    data = load_data_for_chart(dataset.name)
+    data = load_data_for_chart(dataset.name, dataset.md5sum)
     data["annotations"] = anno_clean
     return render_template(
         "admin/annotations_by_dataset.html",

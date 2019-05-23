@@ -9,7 +9,7 @@ from app import db
 from app.decorators import login_required
 from app.main import bp
 from app.models import Annotation, Task
-from app.main.datasets import load_data_for_chart
+from app.utils.datasets import load_data_for_chart
 
 RUBRIC = """
 <i>Please mark all the points in the time series where an <b>abrupt change</b> 
@@ -99,7 +99,7 @@ def task(task_id):
     if task.done:
         flash("It's not possible to edit annotations at the moment.")
         return redirect(url_for("main.index"))
-    data = load_data_for_chart(task.dataset.name)
+    data = load_data_for_chart(task.dataset.name, task.dataset.md5sum)
     return render_template(
         "annotate/index.html",
         title="Annotate %s" % task.dataset.name,

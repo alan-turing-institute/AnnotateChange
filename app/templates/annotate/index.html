@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% import "_partials/modals.html" as modals %}
 
 {% block styles %}
-{{super()}}
+{{ super() }}
 <link rel="stylesheet" href="{{url_for('static', filename='annotate.css')}}">
 {% endblock %}
 
 {% block app_content %}
-<h1>{{ task.dataset.name }}</h1>
+<h1>{{ title }}</h1>
 
 <div id="rubric" class="row">
 	<div class="col-md-12">
@@ -18,54 +19,25 @@
 
 <div id="wrap-buttons" class="row">
 	<div class="col-md-6 text-left">
-	<button class="btn btn-primary float-md-left" type="button" id="btn-reset">Reset</button>
+		<button class="btn btn-primary float-md-left" type="button" 
+			id="btn-reset">Reset</button>
 	</div>
 	<div class="col-md-6 text-right">
-	<button class="btn btn-warning float-md-right" type="button" id="btn-none">No Changepoints</button>
-	<button class="btn btn-success float-md-right" id="btn-submit" type="button">Submit</button>
+		<button class="btn btn-warning float-md-right" type="button" 
+			id="btn-none">No change points</button>
+		<button class="btn btn-success float-md-right" id="btn-submit" 
+			type="button">Submit</button>
 	</div>
 </div>
 <br>
 
-<!-- Modal -->
-<div class="modal fade" id="submitNoCPModal" tabindex="-1" role="dialog" aria-labelledby="submitNoCPModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="submitNoCPModalLongTitle">No Changepoints Selected</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-	      Please use the "No Changepoints" button when you think there are no changepoints in the time series.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{ modals.modal("submitNoCP", "No Change Points Selected", "Please use the 
+\"No Change Points\" button when you think there are no change points in the 
+time series.") }}
 
-<!-- Modal -->
-<div class="modal fade" id="NoCPYesCPModal" tabindex="-1" role="dialog" aria-labelledby="NoCPYesCPModalTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="NoCPYesCPModalLongTitle">Changepoints Selected</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-	      There are selected changepoints, please click the Reset button before clicking the "No Changepoints" button.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{ modals.modal("NoCPYesCP", "Change Points Selected", "There are selected 
+change points, please click the Reset button before clicking the \"No change 
+points\" button.") }}
 
 <h3>Selected Changepoints</h3>
 <div id="changepoint-table">
@@ -79,7 +51,7 @@
 <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
 <script src="{{ url_for('static', filename='js/updateTable.js') }}"></script>
 <script src="{{ url_for('static', filename='js/buttons.js') }}"></script>
-<script>makeChart({{ data.chart_data | safe }});</script>
+<script>makeChart("#graph", {{ data.chart_data | safe }});</script>
 <script>
 // reset button
 var reset = document.getElementById("btn-reset");
@@ -87,12 +59,12 @@ reset.onclick = resetOnClick;
 // no changepoint button
 var nocp = document.getElementById("btn-none");
 nocp.onclick = function() {
-	noCPOnClick({{ task.id }});
+	noCPOnClick({{ identifier }});
 };
 // submit button
 var submit = document.getElementById("btn-submit");
 submit.onclick = function() {
-	submitOnClick({{ task.id }});
+	submitOnClick({{ identifier }});
 };
 </script>
 {% endblock %}

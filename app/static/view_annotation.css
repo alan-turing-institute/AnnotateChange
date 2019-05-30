@@ -11,7 +11,7 @@
 
 .ann-line {
 	fill: none;
-	stroke-dasharray: 3,3;
+	stroke-dasharray: 5;
 	clip-path: url(#clip);
 }
 
@@ -64,4 +64,3 @@ rect {
 	fill: #b3b3b3;
 	stroke: #b3b3b3;
 }
-

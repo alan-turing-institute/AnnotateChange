@@ -41,7 +41,7 @@ import re
 
 from flask import current_app
 
-logger = logging.getLogger(__file__)
+LOGGER = logging.getLogger(__file__)
 
 
 def validate_dataset(filename):
@@ -95,6 +95,32 @@ def get_name_from_dataset(filename):
     return data["name"]
 
 
+def dataset_is_demo(filename):
+    with open(filename, "rb") as fid:
+        data = json.load(fid)
+    return "demo" in data
+
+
+def get_demo_true_cps(name):
+    dataset_dir = os.path.join(
+        current_app.instance_path, current_app.config["DATASET_DIR"]
+    )
+    target_filename = os.path.join(dataset_dir, name + ".json")
+    if not os.path.exists(target_filename):
+        LOGGER.error("Dataset with name '%s' can't be found!" % name)
+        return None
+    with open(target_filename, "rb") as fid:
+        data = json.load(fid)
+    if not "demo" in data:
+        LOGGER.error("Asked for 'demo' key in non-demo dataset '%s'" % name)
+        return None
+    if not "true_CPs" in data["demo"]:
+        LOGGER.error(
+            "Expected field'true_cps' field missing for dataset '%s'" % name
+        )
+    return data["demo"]["true_CPs"]
+
+
 def md5sum(filename):
     """ Compute the MD5 hash for a given filename """
     blocksize = 65536
@@ -112,8 +138,11 @@ def load_data_for_chart(name, known_md5):
         current_app.instance_path, current_app.config["DATASET_DIR"]
     )
     target_filename = os.path.join(dataset_dir, name + ".json")
+    if not os.path.exists(target_filename):
+        LOGGER.error("Dataset with name '%s' can't be found!" % name)
+        return None
     if not md5sum(target_filename) == known_md5:
-        logger.error(
+        LOGGER.error(
             """
         MD5 checksum failed for dataset with name: %s.
         Found: %s.

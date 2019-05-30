@@ -1,69 +1,98 @@
 {% extends "base.html" %}
 
 {% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static', filename='user_index.css')}}">
+  {{ super() }}
+  <link rel="stylesheet" href="{{url_for('static', filename='user_index.css')}}">
 {% endblock %}
 
 {% block app_content %}
-{% if current_user.is_authenticated %}
-	<h1>Hi, {{ current_user.username }}!</h1>
-	{% if tasks_todo %}
-	<h2>Annotations to be done</h2>
-	<br>
-	<p>
-	Below are the datasets that we've asked you to annotate, thank you 
-	very much for your help!
-	</p>
-	<br>
-	<div class="tasks-todo">
-		<table class="table table-striped">
-			<thead class="thead-dark">
-				<th scope="col">Name</th>
-			</thead>
-			{% for task in tasks_todo %}
-			<tr>
-				<td><a href="/annotate/{{ task.id }}">{{ task.dataset.name }}</a></td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-	{% elif tasks_todo|length == 0 and tasks_done|length > 0 %}
-	<div id="done">
-		<img src="/static/done.png">
-		<span>No more annotations to do! Thank you so much for your 
-			help, <b>you rock!</b></span>
-	</div>
-	{% else %}
-	<span>There are no datasets for you to annotate at the moment, please 
-		check back again later. Thank you!</span>
-	{% endif %}
-	{% if tasks_done %}
-	<h2>Completed Annotations</h2>
-	<div class="tasks-done">
-		<table class="table table-striped">
-			<thead>
-				<th scope="col">Name</th>
-				<th scope="col">Completed On</th>
-			</thead>
-			{% for task in tasks_done %}
-			<tr>
-				<td>{{ task.dataset.name }}</td>
-				<td>{{ task.annotated_on }}</td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-	{% endif %}
-{% else %}
-	<article>
-		<div>
-			Welcome to <i>AnnotateChange</i> a tool for annotating time 
-			series data for changepoint analysis.
-			<br>
-			<br>
-			Please log in or register to get started.
-		</div>
-	</article>
-{% endif %}
+  {% if current_user.is_authenticated %}
+    <h1>Hi, {{ current_user.username }}!</h1>
+  {% endif %}
+  <p>
+    Welcome to <i>AnnotateChange</i> a tool for annotating time series data 
+    for changepoint analysis.
+  </p>
+  {% if not current_user.is_authenticated %}
+  <br>
+  <p>
+    Please <a href="{{ url_for('auth.login') }}">log in</a> or 
+    <a href="{{ url_for('auth.register') }}">register</a> to get started.
+  </p>
+  {% endif %}
+  {% if current_user.is_authenticated %}
+    <h3>Introduction</h3>
+    {% if not current_user.is_introduced %}
+      <a href="{{ url_for('main.demo') }}">Click here to start the introduction to AnnotateChange.</a>
+      {% if tasks_todo|length == 0 and tasks_done|length == 0 %}
+      <br>
+      <br>
+      <p>
+        When you have finished the introduction, the datasets to annotate 
+        will appear here.
+      </p>
+      {% endif %}
+    {% else %}
+    <p>
+      Thank you for completing the introduction. If you want to revisit 
+      it, you can do so by <a href="{{ url_for('main.demo') }}">clicking here</a>.
+    </p>
+      {% if tasks_todo|length == 0 and tasks_done|length == 0 %}
+      <br>
+      <br>
+      <p>
+        There are currently no datasets for you to annotate. Please check back
+        again later.
+      </p>
+      {% endif %}
+    {% endif %}
+    {% if tasks_todo %}
+      <h3>Datasets to Annotate</h3>
+      <p>
+        Below are the datasets that we would like you to annotate, thank you 
+        very much for your help!
+      </p>
+      <div class="tasks-todo">
+        <table class="table table-striped">
+          <thead class="thead-dark">
+            <th scope="col">Name</th>
+          </thead>
+          {% for task in tasks_todo %}
+            <tr>
+              <td>
+                <a href="{{ url_for('main.annotate', task_id=task.id) }}">
+                  {{ task.dataset.name | title }}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    {% elif tasks_todo|length == 0 and tasks_done|length > 0 %}
+      <div id="done">
+        <img src="{{ url_for('static', filename='done.png') }}">
+        <span>
+          No more annotations to do! Thank you so much for your help, 
+          <b>you rock!</b>
+        </span>
+      </div>
+    {% endif %}
+    {% if tasks_done %}
+      <h3>Completed Annotations</h3>
+      <div class="tasks-done">
+        <table class="table table-striped">
+          <thead>
+            <th scope="col">Name</th>
+            <th scope="col">Completed On</th>
+          </thead>
+          {% for task in tasks_done %}
+            <tr>
+              <td>{{ task.dataset.name | title }}</td>
+              <td>{{ task.annotated_on }}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    {% endif %}
+  {% endif %}
 {% endblock %}

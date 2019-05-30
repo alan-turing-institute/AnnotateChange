@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import logging
 
 from flask import render_template, flash, url_for, redirect, request
 from flask_login import current_user
@@ -11,19 +12,13 @@ from app.main import bp
 from app.models import Annotation, Task
 from app.utils.datasets import load_data_for_chart
 
+logger = logging.getLogger(__name__)
+
 RUBRIC = """
-<i>Please mark all the points in the time series where an <b>abrupt change</b> 
-in
- the behaviour of the series occurs.</i>
+Please mark the points in the time series where an <b>abrupt change</b> in
+ the behaviour of the series occurs. The goal is to define segments of the time 
+ series that are separated by places where these abrupt changes occur.
 <br>
-If there are no such points, please click the <u>no changepoints</u> button.
-When you're ready, please click the <u>submit</u> button.
-<br>
-<br>
-<b>Note:</b> You can zoom and pan the graph if needed.
-<br>
-<br>
-Thank you!
 """
 
 
@@ -35,7 +30,7 @@ def index():
     if current_user.is_authenticated:
         user_id = current_user.id
         tasks = Task.query.filter_by(annotator_id=user_id).all()
-        tasks_done = [t for t in tasks if t.done]
+        tasks_done = [t for t in tasks if t.done and not t.dataset.is_demo]
         tasks_todo = [t for t in tasks if not t.done]
         return render_template(
             "index.html",
@@ -48,14 +43,14 @@ def index():
 
 @bp.route("/annotate/<int:task_id>", methods=("GET", "POST"))
 @login_required
-def task(task_id):
+def annotate(task_id):
     if request.method == "POST":
         # record post time
         now = datetime.datetime.utcnow()
 
         # get the json from the client
         annotation = request.get_json()
-        if annotation["task"] != task_id:
+        if annotation["identifier"] != task_id:
             flash("Internal error: task id doesn't match.", "error")
             return redirect(url_for(task_id=task_id))
 
@@ -100,10 +95,14 @@ def task(task_id):
         flash("It's not possible to edit annotations at the moment.")
         return redirect(url_for("main.index"))
     data = load_data_for_chart(task.dataset.name, task.dataset.md5sum)
+    if data is None:
+        flash(
+            "An internal error occurred loading this dataset, the admin has been notified. Please try again later. We apologise for the inconvenience."
+        )
     return render_template(
         "annotate/index.html",
-        title="Annotate %s" % task.dataset.name,
-        task=task,
+        title=task.dataset.name.title(),
+        identifier=task.id,
         data=data,
         rubric=RUBRIC,
     )

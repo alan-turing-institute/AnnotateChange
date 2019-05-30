@@ -16,6 +16,8 @@ def admin_required(func):
             return func(*args, **kwargs)
         elif not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
+        elif not current_user.is_confirmed:
+            return redirect(url_for("auth.not_confirmed"))
         elif not current_user.is_admin:
             return current_app.login_manager.unauthorized()
         return func(*args, **kwargs)

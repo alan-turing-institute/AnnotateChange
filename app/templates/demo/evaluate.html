@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static', filename='css/demo/evaluate.css')}}">
+{% endblock %}
+
+{% block app_content %}
+<h1>{{ title }}</h1>
+
+<div id="lesson" class="row">
+  <div class="col-md-8">
+    {{ text | safe }}
+  </div>
+</div>
+
+<div class="graph-wrapper">
+	<div class="row">
+		<p><b>Your annotation:</b></p>
+	</div>
+	<div id="graph_user"></div>
+	<div class="row">
+		<p><b>Ground truth:</b></p>
+	</div>
+	<div id="graph_true"></div>
+</div>
+
+<div class="row">
+  <div id="next-btn" class="col-md-10">
+    {{ wtf.quick_form(form, button_map={'submit': 'primary'}) }}
+  </div>
+</div>
+
+<script src="//d3js.org/d3.v5.min.js"></script>
+<script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
+<script>makeChartAnnotated(
+	"#graph_user",
+	{{ data.chart_data | safe }},
+	{{ annotations_user | safe }}
+);
+</script>
+<script>makeChartAnnotated(
+	"#graph_true",
+	{{ data.chart_data | safe }},
+	{{ annotations_true | safe }}
+);
+</script>
+{% endblock %}

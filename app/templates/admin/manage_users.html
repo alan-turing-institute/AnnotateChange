@@ -1,70 +1,72 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<h1>Manage Users</h1>
+  <h1>Manage Users</h1>
 
-<div class="col-lg-3">
+  <div class="col-lg-3">
     <div class="row">
-        <form class="form" action="" method="POST">
-            {{ form.hidden_tag() }}
-	    {{ form.user  }}
-            {{ form.delete(hidden='true', id='form-submit') }}
-            <!-- Button trigger modal -->
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
-            Delete
-            </button>
-        </form>
+      <form class="form" action="" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.user  }}
+        {{ form.delete(hidden='true', id='form-submit') }}
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+          Delete
+        </button>
+      </form>
     </div>
-</div>
+  </div>
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-	<h5 class="modal-title" id="deleteModalLabel">Delete Dataset</h5>
-      </div>
-      <div class="modal-body">
-	You are about to delete the user <span id="user-name"></span> <b>and</b> all associated tasks and annotations. Are you sure?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success success" id="modal-confirm">Confirm</button>
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Delete Dataset</h5>
+        </div>
+        <div class="modal-body">
+          You are about to delete the user <span id="user-name"></span> <b>and</b> all associated tasks and annotations. Are you sure?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success success" id="modal-confirm">Confirm</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<br>
-<h1>User Overview</h1>
-<article class="overview">
-	<table class="table table-striped">
-		<thead class="thead-dark">
-			<th scope="col">ID</th>
-			<th scope="col">Username</th>
-			<th scope="col">Email</th>
-			<th scope="col">Confirmed</th>
-			<th scope="col">Last Active</th>
-			<th scope="col">Admin</th>
-		</thead>
-		{% for user in users %}
-		<tr>
-			<th scope="row">{{ user.id }}</th>
-			<td>{{ user.username }}</td>
-			<td>{{ user.email }}</td>
-			<td>{% if user.is_confirmed %}Yes{% else %}No{% endif %}</td>
-			<td>{{ user.last_active }}</td>
-			<td>{% if user.is_admin %}Yes{% else %}{% endif %}</td>
-		</tr>
-		{% endfor %}
-		</tr>
-	</table>
-</article>
+  <br>
+  <h1>User Overview</h1>
+  <article class="overview">
+    <table class="table table-striped">
+      <thead class="thead-dark">
+        <th scope="col">ID</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Confirmed?</th>
+        <th scope="col">Introduced?</th>
+        <th scope="col">Last Active (UTC)</th>
+        <th scope="col">Admin?</th>
+      </thead>
+      {% for user in users %}
+        <tr>
+          <th scope="row">{{ user.id }}</th>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{% if user.is_confirmed %}Yes{% else %}No{% endif %}</td>
+          <td>{% if user.is_introduced %}Yes{% else %}No{% endif %}</td>
+          <td>{{ user.last_active }}</td>
+          <td>{% if user.is_admin %}Yes{% else %}{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tr>
+    </table>
+  </article>
 
-<script>
-var conf = document.getElementById("modal-confirm");
-conf.onclick = function() {
-	document.getElementById("form-submit").click();
-};
-</script>
+  <script>
+    var conf = document.getElementById("modal-confirm");
+    conf.onclick = function() {
+      document.getElementById("form-submit").click();
+    };
+  </script>
 {% endblock %}

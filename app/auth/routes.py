@@ -21,15 +21,10 @@ from app.auth.email import (
     send_email_confirmation_email,
 )
 from app.models import User
-from app.utils.tasks import create_initial_user_tasks
 
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
-    if current_user.is_authenticated:
-        current_user.last_active = datetime.datetime.utcnow()
-        db.session.commit()
-        return redirect(url_for("main.index"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -37,6 +32,8 @@ def login():
             flash("Invalid username or password", "error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
+        current_user.last_active = datetime.datetime.utcnow()
+        db.session.commit()
         if not user.is_confirmed:
             return redirect(url_for("auth.not_confirmed"))
         next_page = request.args.get("next")
@@ -122,11 +119,6 @@ def confirm_email(token):
     else:
         user.is_confirmed = True
         db.session.commit()
-        for task in create_initial_user_tasks(user):
-            if task is None:
-                break
-            db.session.add(task)
-            db.session.commit()
         flash("Account confirmed successfully. Thank you!", "success")
         return redirect(url_for("auth.login"))
     return redirect(url_for("main.index"))

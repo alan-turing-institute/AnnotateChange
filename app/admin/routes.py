@@ -41,7 +41,7 @@ def manage_tasks():
     form_manual.username.choices = user_list
     form_manual.dataset.choices = dataset_list
 
-    if form_auto.validate_on_submit() and form_auto.assign.data:
+    if form_auto.validate_on_submit() and form_auto.submit.data:
         max_per_user = form_auto.max_per_user.data
         num_per_dataset = form_auto.num_per_dataset.data
 
@@ -130,6 +130,8 @@ def manage_users():
             flash("User doesn't exist.", "error")
             return redirect(url_for("admin.manage_users"))
 
+        username = user.username
+
         tasks = Task.query.filter_by(annotator_id=user.id).all()
         for task in tasks:
             for ann in Annotation.query.filter_by(task_id=task.id).all():
@@ -137,7 +139,7 @@ def manage_users():
             db.session.delete(task)
         db.session.delete(user)
         db.session.commit()
-        flash("User deleted successfully.", "success")
+        flash("User '%s' deleted successfully." % username, "success")
         return redirect(url_for("admin.manage_users"))
     return render_template(
         "admin/manage_users.html", title="Manage Users", users=users, form=form
@@ -175,6 +177,7 @@ def manage_datasets():
         db.session.commit()
         os.unlink(filename)
         flash("Dataset deleted successfully.", "success")
+        return redirect(url_for("admin.manage_datasets"))
 
     overview = []
     for dataset in Dataset.query.all():
@@ -187,11 +190,13 @@ def manage_datasets():
         entry = {
             "id": dataset.id,
             "name": dataset.name,
+            "demo": dataset.is_demo,
             "assigned": len(tasks),
             "completed": n_complete,
             "percentage": perc,
         }
         overview.append(entry)
+        overview.sort(key=lambda x: x["name"])
     return render_template(
         "admin/manage_datasets.html",
         title="Manage Datasets",
@@ -226,8 +231,10 @@ def add_dataset():
         if not os.path.exists(target_filename):
             flash("Internal error: file moving failed", "error")
             return redirect(url_for("admin.add_dataset"))
-
-        dataset = Dataset(name=name, md5sum=md5sum(target_filename))
+        is_demo = dataset_is_demo(target_filename)
+        dataset = Dataset(
+            name=name, md5sum=md5sum(target_filename), is_demo=is_demo
+        )
         db.session.add(dataset)
         db.session.commit()
         flash("Dataset %r added successfully." % name, "success")

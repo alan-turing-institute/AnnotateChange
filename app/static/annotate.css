@@ -20,5 +20,9 @@ rect {
 }
 
 #rubric {
-	text-align: center;
+	text-align: left;
+	padding-bottom: 20px;
+	padding-top: 10px;
+	width: 80%;
+	font-size: 16px;
 }

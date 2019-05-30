@@ -8,7 +8,7 @@ function resetOnClick() {
 	updateTable();
 }
 
-function noCPOnClick(task_id) {
+function noCPOnClick(identifier) {
 	var changepoints = document.getElementsByClassName("changepoint");
 	// validation
 	if (changepoints.length > 0) {
@@ -16,27 +16,27 @@ function noCPOnClick(task_id) {
 		return;
 	}
 
-	var obj = {
-		task: task_id,
-		changepoints: null
-	};
+	var obj = {}
+	obj["identifier"] = identifier;
+	obj["changepoints"] = null;
 
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "");
+	xhr.open("POST", "", false);
 	xhr.withCredentials = true;
 	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.send(JSON.stringify(obj));
+	/* Flask's return to this POST must be a URL, not a template!*/
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState == XMLHttpRequest.DONE) {
-			if (xhr.status === 200)
-				window.location.href = xhr.responseText;
+		if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+			window.location.href = xhr.responseText;
+			console.log("XHR Success: " + xhr.responseText);
 		} else {
-			console.log("Error: " + xhr.status);
+			console.log("XHR Error: " + xhr.status);
 		}
-	};
+	}
+	xhr.send(JSON.stringify(obj));
 }
 
-function submitOnClick(task_id) {
+function submitOnClick(identifier) {
 	var changepoints = document.getElementsByClassName("changepoint");
 	// validation
 	if (changepoints.length === 0) {
@@ -45,7 +45,7 @@ function submitOnClick(task_id) {
 	}
 
 	var obj = {};
-	obj["task"] = task_id;
+	obj["identifier"] = identifier;
 	obj["changepoints"] = [];
 	var i, cp;
 	for (i=0; i<changepoints.length; i++) {
@@ -62,14 +62,15 @@ function submitOnClick(task_id) {
 	xhr.open("POST", "");
 	xhr.withCredentials = true;
 	xhr.setRequestHeader("Content-Type", "application/json");
-	xhr.send(JSON.stringify(obj));
+	/* Flask's return to this POST must be a URL, not a template!*/
 	xhr.onreadystatechange = function() {
-		if (xhr.readyState == XMLHttpRequest.DONE) {
-			if (xhr.status === 200)
-				window.location.href = xhr.responseText;
+		if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+			window.location.href = xhr.responseText;
+			console.log("XHR Success: " + xhr.responseText);
 		} else {
-			console.log("Error: " + xhr.status);
+			console.log("XHR Error: " + xhr.status);
 		}
 	};
+	xhr.send(JSON.stringify(obj));
 }
 

@@ -2,12 +2,13 @@
 {% import "bootstrap/utils.html" as util %}
 
 {% block styles %}
-{{ super() }}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='sticky_footer.css') }}">
 {% endblock %}
 
 {% block title %}
-  {% if title %}{{ title }} -- AnnotateChange{% else %}Welcome to AnnotateChange{% endif %}
+  {% if title %}{{ title }} &middot; AnnotateChange{% else %}Welcome to AnnotateChange{% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -28,13 +29,13 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {% if current_user.is_anonymous %}
-          <li><a href="{{ url_for('auth.login') }}">Login</a></li>
-	  <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
           {% else %}
-	  {% if current_user.is_admin %}
-		<li><a href="/admin" style="color: red;">Admin Panel</a></li>
-	  {% endif %}
-          <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+            {% if current_user.is_admin %}
+              <li><a href="{{ url_for('admin.index') }}" style="color: red;">Admin Panel</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
           {% endif %}
         </ul>
       </div>
@@ -44,19 +45,13 @@
 
 {% block content %}
   <main class="container">
-
-    {{ util.flashed_messages(dismissible=True) }}
-
-    {% block app_content %}
-    {% endblock %}
+  {{ util.flashed_messages(dismissible=True) }}
+  {% block app_content %}
+  {% endblock %}
   </main>
   <footer class="fixed-bottom">
-	<div class="container">
-		<span class="text-muted">This is AnnotateChange version {{ 
-			config.APP_VERSION }}. For questions or comments, 
-			please contact <a 
-		      href="mailto:gvandenburg@turing.ac.uk">Gertjan van den 
-		      Burg</a>.</span>
-  	</div>
+    <div class="container">
+      <span class="text-muted">This is AnnotateChange version {{ config.APP_VERSION }}. For questions or comments, please <a href="mailto:annotatechange@gmail.com">send us an email</a>.</span>
+    </div>
   </footer>
 {% endblock %}

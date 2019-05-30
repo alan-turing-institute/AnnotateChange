@@ -22,7 +22,7 @@ class AdminAutoAssignForm(FlaskForm):
     num_per_dataset = IntegerField(
         "Tasks per Dataset", [NumberRange(min=1, max=20)], default=10
     )
-    assign = SubmitField("Assign")
+    submit = SubmitField("Submit")
 
 
 class AdminManageTaskForm(FlaskForm):

@@ -22,7 +22,12 @@ class User(UserMixin, db.Model):
         db.DateTime(), nullable=False, default=datetime.datetime.utcnow
     )
     is_admin = db.Column(db.Boolean(), default=False)
+
+    # after email is confirmed:
     is_confirmed = db.Column(db.Boolean(), default=False)
+
+    # after all demo tasks completed:
+    is_introduced = db.Column(db.Boolean(), default=False)
 
     def __repr__(self):
         return "<User %r>" % self.username
@@ -75,6 +80,9 @@ class Dataset(db.Model):
         db.DateTime, nullable=False, default=datetime.datetime.utcnow
     )
     md5sum = db.Column(db.String(32), unique=True, nullable=False)
+
+    # Whether or not dataset is a demo dataset.
+    is_demo = db.Column(db.Boolean(), default=True)
 
     def __repr__(self):
         return "<Dataset %r>" % self.name

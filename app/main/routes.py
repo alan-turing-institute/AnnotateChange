@@ -11,6 +11,7 @@ from app.decorators import login_required
 from app.main import bp
 from app.models import Annotation, Task
 from app.utils.datasets import load_data_for_chart
+from app.utils.tasks import generate_user_task
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,9 @@ def index():
         user_id = current_user.id
         tasks = Task.query.filter_by(annotator_id=user_id).all()
         tasks_done = [t for t in tasks if t.done and not t.dataset.is_demo]
-        tasks_todo = [t for t in tasks if not t.done]
+        tasks_todo = [
+            t for t in tasks if (not t.done) and (not t.dataset.is_demo)
+        ]
         return render_template(
             "index.html",
             title="Home",
@@ -78,8 +81,18 @@ def annotate(task_id):
         task.done = True
         task.annotated_on = now
         db.session.commit()
-
         flash("Your annotation has been recorded, thank you!", "success")
+
+        # assign a new task if necessary
+        task = generate_user_task(current_user)
+        if task is None:
+            return url_for("main.index")
+        db.session.add(task)
+        db.session.commit()
+        flash(
+            "A new dataset has been assigned for you to annotate. Thanks for your help!",
+            "info",
+        )
         return url_for("main.index")
 
     task = Task.query.filter_by(id=task_id).first()

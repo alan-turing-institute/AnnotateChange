@@ -20,7 +20,8 @@ from app.auth.email import (
     send_password_reset_email,
     send_email_confirmation_email,
 )
-from app.models import User
+from app.models import User, Task
+from app.utils.tasks import generate_user_task
 
 
 @bp.route("/login", methods=("GET", "POST"))
@@ -32,13 +33,36 @@ def login():
             flash("Invalid username or password", "error")
             return redirect(url_for("auth.login"))
         login_user(user, remember=form.remember_me.data)
+        # record last_active time
         current_user.last_active = datetime.datetime.utcnow()
         db.session.commit()
+
+        # redirect if not confirmed yet
         if not user.is_confirmed:
             return redirect(url_for("auth.not_confirmed"))
+
+        # Get the next page from the request (default to index)
         next_page = request.args.get("next")
         if not next_page or url_parse(next_page).netloc != "":
             next_page = url_for("main.index")
+
+        # redirect if not introduced yet
+        if not user.is_introduced:
+            return redirect(url_for("main.index"))
+
+        # assign task if no remaining and not at maximum.
+        remaining = Task.query.filter_by(
+            annotator_id=user.id, done=False
+        ).all()
+        if remaining:
+            return redirect(next_page)
+
+        task = generate_user_task(user)
+        if task is None:
+            return redirect(next_page)
+
+        db.session.add(task)
+        db.session.commit()
         return redirect(next_page)
     return render_template("auth/login.html", title="Sign In", form=form)
 

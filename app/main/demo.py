@@ -23,6 +23,7 @@ from app.main import bp
 from app.main.forms import NextForm
 from app.main.routes import RUBRIC
 from app.utils.datasets import load_data_for_chart, get_demo_true_cps
+from app.utils.tasks import generate_user_task
 
 LOGGER = logging.getLogger(__name__)
 
@@ -253,13 +254,21 @@ def redirect_user(demo_id, phase_id):
     last_demo_id = max(DEMO_DATA.keys())
     demo_last_phase_id = 3
     if demo_id == last_demo_id and phase_id == demo_last_phase_id:
-        # User is introduced.
+        # User is already introduced (happens if they redo the demo)
         if current_user.is_introduced:
             return redirect(url_for("main.index"))
 
+        # mark user as introduced
         current_user.is_introduced = True
         db.session.commit()
-        # TODO: Assign real tasks to the user here.
+
+        # assign a task to the user
+        task = generate_user_task(current_user)
+        if task is None:
+            return redirect(url_for("main.index"))
+        db.session.add(task)
+        db.session.commit()
+
         return redirect(url_for("main.index"))
     elif phase_id == demo_last_phase_id:
         demo_id += 1
@@ -352,7 +361,7 @@ def demo_annotate(demo_id):
     if dataset is None:
         LOGGER.error(
             "Demo requested unavailable dataset: %s"
-            % demo_data["dataset"]["name"]
+            % DEMO_DATA[demo_id]["dataset"]["name"]
         )
         flash(
             "An internal error occured. The administrator has been notified. We apologise for the inconvenience, please try again later.",

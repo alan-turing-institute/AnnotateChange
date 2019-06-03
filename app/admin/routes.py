@@ -10,7 +10,6 @@ from app import db
 from app.admin import bp
 from app.decorators import admin_required
 from app.admin.forms import (
-    AdminAutoAssignForm,
     AdminManageTaskForm,
     AdminAddDatasetForm,
     AdminManageDatasetsForm,
@@ -24,54 +23,38 @@ from app.utils.datasets import (
     dataset_is_demo,
     load_data_for_chart,
 )
-from app.utils.tasks import generate_auto_assign_tasks
 
 
 @bp.route("/manage/tasks", methods=("GET", "POST"))
 @admin_required
 def manage_tasks():
-    form_auto = AdminAutoAssignForm()
-
     user_list = [(u.id, u.username) for u in User.query.all()]
     dataset_list = [
         (d.id, d.name) for d in Dataset.query.order_by(Dataset.name).all()
     ]
 
-    form_manual = AdminManageTaskForm()
-    form_manual.username.choices = user_list
-    form_manual.dataset.choices = dataset_list
+    form = AdminManageTaskForm()
+    form.username.choices = user_list
+    form.dataset.choices = dataset_list
 
-    if form_auto.validate_on_submit() and form_auto.submit.data:
-        max_per_user = form_auto.max_per_user.data
-        num_per_dataset = form_auto.num_per_dataset.data
-
-        for task, error in generate_auto_assign_tasks(
-            max_per_user, num_per_dataset
-        ):
-            if task is None:
-                flash(error, "error")
-                return redirect(url_for("admin.manage_tasks"))
-            db.session.add(task)
-            db.session.commit()
-        flash("Automatic task assignment successful.", "success")
-    elif form_manual.validate_on_submit():
-        user = User.query.filter_by(id=form_manual.username.data).first()
+    if form.validate_on_submit():
+        user = User.query.filter_by(id=form.username.data).first()
         if user is None:
             flash("User does not exist.", "error")
             return redirect(url_for("admin.manage_tasks"))
-        dataset = Dataset.query.filter_by(id=form_manual.dataset.data).first()
+        dataset = Dataset.query.filter_by(id=form.dataset.data).first()
         if dataset is None:
             flash("Dataset does not exist.", "error")
             return redirect(url_for("admin.manage_tasks"))
 
         action = None
-        if form_manual.assign.data:
+        if form.assign.data:
             action = "assign"
-        elif form_manual.delete.data:
+        elif form.delete.data:
             action = "delete"
         else:
             flash(
-                "Internal error: no button is true but form_manual was submitted.",
+                "Internal error: no button is true but form was submitted.",
                 "error",
             )
             return redirect(url_for("admin.manage_tasks"))
@@ -107,11 +90,7 @@ def manage_tasks():
         .all()
     )
     return render_template(
-        "admin/manage.html",
-        title="Assign Task",
-        form_auto=form_auto,
-        form_manual=form_manual,
-        tasks=tasks,
+        "admin/manage.html", title="Assign Task", form=form, tasks=tasks
     )
 
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 0.2.1
+
+* Bugfix for config variables
+
+## Version 0.2.0
+
+* Add introduction for users
+* Change flow for assigning tasks to users
+* Remove admin option for "auto-assign" tasks
+* Automatically logout users after 15 minutes
+* Clean up Javascript code and templates
+
 ## Version 0.1.5
 
 * Bugfix for registration restriction

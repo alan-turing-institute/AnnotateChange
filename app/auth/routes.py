@@ -2,7 +2,15 @@
 
 import datetime
 
-from flask import render_template, flash, redirect, url_for, request
+from flask import (
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    current_app,
+    session,
+    request,
+)
 from flask_login import current_user, login_user, logout_user
 
 from werkzeug.urls import url_parse
@@ -24,15 +32,25 @@ from app.models import User, Task
 from app.utils.tasks import generate_user_task
 
 
+def auto_logout():
+    # Automatically logout after a period of inactivity
+    # https://stackoverflow.com/a/40914886/1154005
+    session.permanent = True
+    current_app.permanent_session_lifetime = datetime.timedelta(minutes=15)
+    session.modified = True
+
+
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+        # log the user in if exists
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash("Invalid username or password", "error")
             return redirect(url_for("auth.login"))
-        login_user(user, remember=form.remember_me.data)
+        login_user(user)
+
         # record last_active time
         current_user.last_active = datetime.datetime.utcnow()
         db.session.commit()

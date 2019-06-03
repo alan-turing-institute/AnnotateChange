@@ -65,6 +65,12 @@ def create_app(config_class=Config):
 
     app.register_blueprint(admin_bp)
 
+    # Register the auto_logout function
+    from app.auth.routes import auto_logout
+
+    app.before_request(auto_logout)
+
+
     if not app.debug:
         if app.config["MAIL_SERVER"]:
             auth = None

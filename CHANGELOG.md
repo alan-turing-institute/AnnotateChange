@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.2
+
+* Use [DataTables](https://datatables.net/) for the tables in the admin view
+* Clarify some text in the demo
+* Code improvements
+
 ## Version 0.2.1
 
 * Bugfix for config variables

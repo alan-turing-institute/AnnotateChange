@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import "_partials/modals.html" as modals %}
+
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ bootstrap_find_resource('css/jquery.dataTables.css', cdn='datatables', use_minified=True) }}">
@@ -21,23 +23,8 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-	<h5 class="modal-title" id="deleteModalLabel">Delete Dataset</h5>
-      </div>
-      <div class="modal-body">
-	You are about to delete the dataset <span id="dataset-name"></span> <b>and</b> all associated tasks and annotations. Are you sure?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-success success" id="modal-confirm">Confirm</button>
-      </div>
-    </div>
-  </div>
-</div>
+{{ modals.confirm("delete", "Delete Dataset", "You are about to delete the 
+dataset <b>and</b> all associated tasks and annotations. Are you sure?") }}
 
 <br>
 <h1>Task Completion Overview</h1>

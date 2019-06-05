@@ -1,4 +1,4 @@
-{% macro modal(id, title, message) %}
+{% macro info(id, title, message) %}
 <!-- Modal -->
 <div class="modal fade" id="{{ id }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ id }}ModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -10,10 +10,29 @@
         </button>
       </div>
       <div class="modal-body">
-        {{ message }}
+        {{ message | safe }}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro confirm(id, title, message) %}
+<div class="modal fade" id="{{ id }}Modal" tabindex="-1" role="dialog" aria-labelledby="{{ id }}ModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{ id }}ModalTitle">{{ title }}</h5>
+      </div>
+      <div class="modal-body">
+        {{ message | safe }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success success" id="modal-confirm">Confirm</button>
       </div>
     </div>
   </div>

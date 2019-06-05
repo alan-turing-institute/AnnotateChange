@@ -210,11 +210,14 @@ DEMO_DATA = {
             "text": markdown.markdown(
                 textwrap.dedent(
                     """
-                What we see here is a change in *trend*. For these types of 
-                changes it's not always easy to figure out exactly where the 
-                change occurs, so it's harder to get it exactly right.  Use 
-                your intuition and keep in mind that it is normal for the 
-                observations to be noisy."""
+                What we see here is a change in *trend*. Changes in trend are 
+                not always change points: gradual changes in direction are 
+                common and should not be considered *abrupt* changes. 
+
+                For trend changes it's not always easy to figure out exactly 
+                where the change occurs, so it's harder to get it exactly 
+                right. Use your intuition and keep in mind that it is normal 
+                for the observations to be noisy."""
                 )
             )
         },

@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ bootstrap_find_resource('css/jquery.dataTables.css', cdn='datatables', use_minified=True) }}">
+{% endblock %}
+
 {% block app_content %}
 <h1>View Annotations</h1>
 <div class="row">
@@ -8,8 +13,9 @@
 		{{ wtf.quick_form(form) }}
 	</div>
 </div>
+<br>
 <article class="overview">
-	<table class="table table-striped">
+	<table id="annotations-table" class="table table-striped">
 		<thead class="thead-dark">
       <th scope="col">Dataset</th>
 			<th scope="col">Username</th>
@@ -26,3 +32,13 @@
 	</table>
 </article>
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
+<script>
+	$(document).ready(function() {
+		$('#annotations-table').DataTable();
+	});
+</script>
+{% endblock scripts %}

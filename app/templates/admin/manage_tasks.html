@@ -3,11 +3,7 @@
 
 {% block styles %}
 {{ super() }}
-<script src="//code.jquery.com/jquery-3.4.1.min.js"
-			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-			  crossorigin="anonymous"></script>
-<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="{{ bootstrap_find_resource('css/jquery.dataTables.css', cdn='datatables', use_minified=True) }}">
 {% endblock %}
 
 {% block app_content %}
@@ -40,6 +36,10 @@
 		</tr>
 	</table>
 </article>
-
-<script>$(document).ready(function() { $('#tasks').DataTable(); });</script>
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
+<script>$(document).ready(function() { $('#tasks').DataTable(); });</script>
+{% endblock scripts %}

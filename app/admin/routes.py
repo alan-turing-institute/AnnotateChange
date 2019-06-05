@@ -90,7 +90,7 @@ def manage_tasks():
         .all()
     )
     return render_template(
-        "admin/manage.html", title="Assign Task", form=form, tasks=tasks
+        "admin/manage_tasks.html", title="Assign Task", form=form, tasks=tasks
     )
 
 

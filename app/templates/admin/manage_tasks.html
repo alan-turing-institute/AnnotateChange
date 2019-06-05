@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+{% block styles %}
+{{ super() }}
+<script src="//code.jquery.com/jquery-3.4.1.min.js"
+			  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+			  crossorigin="anonymous"></script>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
 {% block app_content %}
 <h1>Manage Tasks</h1>
 <div class="row">
@@ -11,7 +20,7 @@
 <br>
 <h1>Task Overview</h1>
 <article class="overview">
-	<table class="table table-striped">
+	<table id="tasks" class="table table-striped">
 		<thead class="thead-dark">
 			<th scope="col">Task ID</th>
 			<th scope="col">Dataset Name</th>
@@ -31,4 +40,6 @@
 		</tr>
 	</table>
 </article>
+
+<script>$(document).ready(function() { $('#tasks').DataTable(); });</script>
 {% endblock %}

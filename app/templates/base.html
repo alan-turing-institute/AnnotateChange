@@ -49,9 +49,11 @@
   {% block app_content %}
   {% endblock %}
   </main>
+  {%- block footer %}
   <footer class="fixed-bottom">
     <div class="container">
       <span class="text-muted">This is AnnotateChange version {{ config.APP_VERSION }}. For questions or comments, please <a href="mailto:annotatechange@gmail.com">send us an email</a>.</span>
     </div>
   </footer>
+  {%- endblock footer %}
 {% endblock %}

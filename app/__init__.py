@@ -29,7 +29,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
 
     # Set the app version in the config (we use it in templates)
-    app.config['APP_VERSION'] = __version__
+    app.config["APP_VERSION"] = __version__
 
     # Initialize all extensions
     db.init_app(app)
@@ -77,7 +77,6 @@ def create_app(config_class=Config):
     from app.auth.routes import auto_logout
 
     app.before_request(auto_logout)
-
 
     if not app.debug:
         if app.config["MAIL_SERVER"]:

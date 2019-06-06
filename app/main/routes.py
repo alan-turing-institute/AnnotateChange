@@ -16,7 +16,7 @@ from app.utils.tasks import generate_user_task
 logger = logging.getLogger(__name__)
 
 RUBRIC = """
-Please mark the points in the time series where an <b>abrupt change</b> in
+Please mark the point(s) in the time series where an <b>abrupt change</b> in
  the behaviour of the series occurs. The goal is to define segments of the time 
  series that are separated by places where these abrupt changes occur.
 <br>

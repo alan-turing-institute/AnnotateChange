@@ -52,7 +52,7 @@ def generate_user_task(user):
         return None
 
     # sort datasets so that the ones who need the least are at the front.
-    potential_datasets.sort()
+    potential_datasets.sort(key=lambda x: x[0])
 
     _, dataset = potential_datasets[0]
     task = Task(annotator_id=user.id, dataset_id=dataset.id)

@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.2.3
+
+* Bugfix for sorting datasets that caused a crash
+
 ## Version 0.2.2
 
 * Use [DataTables](https://datatables.net/) for the tables in the admin view

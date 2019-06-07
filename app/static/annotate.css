@@ -26,3 +26,8 @@ rect {
 	width: 80%;
 	font-size: 16px;
 }
+
+#usage {
+	font-size: 16px;
+	font-style: italic;
+}

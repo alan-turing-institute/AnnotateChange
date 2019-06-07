@@ -34,13 +34,14 @@
 
 <script src="//d3js.org/d3.v5.min.js"></script>
 <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
-<script>makeChartAnnotated(
+<script>viewAnnotations(
 	"#graph_user",
 	{{ data.chart_data | safe }},
 	{{ annotations_user | safe }}
 );
 </script>
-<script>makeChartAnnotated(
+<script>
+  viewAnnotations(
 	"#graph_true",
 	{{ data.chart_data | safe }},
 	{{ annotations_true | safe }}

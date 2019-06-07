@@ -16,7 +16,7 @@
 {{ super() }}
   <script src="//d3js.org/d3.v5.min.js"></script>
   <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
-  <script>makeChartAnnotatedAdmin(
+  <script>adminViewAnnotations(
     '#graph',
     {{ data.chart_data | safe }},
     {{ data.annotations | safe }}

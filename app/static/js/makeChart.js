@@ -1,41 +1,30 @@
 // Based on: //https://github.com/benalexkeen/d3-flask-blog-post/blob/master/templates/index.html
 // And: https://bl.ocks.org/mbostock/35964711079355050ff1
 
-function makeChart(selector, data) {
+function preprocessData(data) {
 	var n = 0;
 	data.forEach(function(d) {
 		d.X = n++;
 		d.Y = d.value;
 	});
+}
 
-	var divWidth = 1000;
-	var divHeight = 480;
+function scaleAndAxis(data, width, height) {
+	// xScale is the active scale used for zooming, xScaleOrig is used as 
+	// the original scale that is never changed.
+	var xScale = d3.scaleLinear().range([0, width]);
+	var xScaleOrig = d3.scaleLinear().range([0, width]);
+	var yScale = d3.scaleLinear().range([height, 0]);
 
-	var svg = d3.select(selector)
-		.on("touchstart", nozoom)
-		.on("touchmove", nozoom)
-		.append("svg")
-		.attr("width", divWidth)
-		.attr("height", divHeight);
+	// create the axes
+	var xAxis = d3.axisBottom(xScale);
+	var yAxis = d3.axisLeft(yScale);
 
-	var margin = {top: 20, right: 20, bottom: 50, left: 50};
-	var width = +svg.attr("width") - margin.left - margin.right;
-	var height = +svg.attr("height") - margin.top - margin.bottom;
-
-	var zoom = d3.zoom()
-		.scaleExtent([1, 50])
-		.translateExtent([[0, 0], [width, height]])
-		.extent([[0, 0], [width, height]])
-		.on("zoom", zoomed);
-
-	var x = d3.scaleLinear().range([0, width]);
-	var x2 = d3.scaleLinear().range([0, width]);
-	var y = d3.scaleLinear().range([height, 0]);
-
-	var xAxis = d3.axisBottom(x);
-	var yAxis = d3.axisLeft(y);
+	// turn off ticks on the y axis. We don't want annotators to be 
+	// influenced by whether a change is big in the absolute sense.
 	yAxis.ticks(0);
 
+	// compute the domains for the axes
 	var xExtent = d3.extent(data, function(d) { return d.X; });
 	var xRange = xExtent[1] - xExtent[0];
 	var xDomainMin = xExtent[0] - xRange * 0.02;
@@ -46,105 +35,29 @@ function makeChart(selector, data) {
 	var yDomainMin = yExtent[0] - yRange * 0.05;
 	var yDomainMax = yExtent[1] + yRange * 0.05;
 
-	x.domain([xDomainMin, xDomainMax]);
-	y.domain([yDomainMin, yDomainMax]);
-	x2.domain(x.domain());
+	// set the axis domains
+	xScale.domain([xDomainMin, xDomainMax]);
+	xScaleOrig.domain([xDomainMin, xDomainMax]);
+	yScale.domain([yDomainMin, yDomainMax]);
 
-	svg.append("defs").append("clipPath")
-		.attr("id", "clip")
-		.append("rect")
-		.attr("width", width - 18)
-		.attr("height", height)
-		.attr("transform", "translate(" + 18 + ",0)");
-
-	svg.append("g")
-		.attr("class", "axis axis--y")
-		.attr("transform", "translate(" + 18 + ",0)")
-		.call(yAxis);
-
-	svg.append("g")
-		.attr("class", "axis axis--x")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
-
-	svg.append("text")
-		.attr("text-anchor", "middle")
-		.attr("class", "axis-label")
-		.attr("transform", "translate(" + (width - 20) + "," + (height + 50) + ")")
-		.text("Time");
-
-	var line = d3.line()
-		.x(function(d) { return x(d.X); })
-		.y(function(d) { return y(d.Y); });
-
-	var g = svg.append("g")
-		.call(zoom);
-
-	g.append("rect")
-		.attr("width", width)
-		.attr("height", height);
-
-	var view = g.append("g")
-		.attr("class", "view");
-
-	view.append("path")
-		.datum(data)
-		.attr("class", "line")
-		.attr("d", line);
-
-	var points = view.selectAll("circle")
-		.data(data)
-		.enter().append("circle")
-		.attr("cx", function(d) { return x(d.X); })
-		.attr("cy", function(d) { return y(d.Y); })
-		.attr("data_X", function(d) { return d.X; })
-		.attr("data_Y", function(d) { return d.Y; })
-		.attr("r", 5)
-		.on("click", clicked);
-
-	function zoomed() {
-		t = d3.event.transform;
-		x.domain(t.rescaleX(x2).domain());
-		svg.select(".line").attr("d", line);
-		points.data(data)
-			.attr("cx", function(d) { return x(d.X); })
-			.attr("cy", function(d) { return y(d.Y); });
-		svg.select(".axis--x").call(xAxis);
-	}
-
-	function clicked(d, i) {
-		if (d3.event.defaultPrevented) return; // zoomed
-
-		// this function handles changepoint marking
-		var elem = d3.select(this);
-		if (elem.classed("changepoint")) {
-			elem.style("fill", "blue");
-			elem.classed("changepoint", false);
-		} else {
-			elem.style("fill", "red");
-			elem.classed("changepoint", true);
-		}
-		updateTable();
-	}
-
-	function nozoom() {
-		d3.event.preventDefault();
-	}
+	return [xAxis, yAxis, xScale, xScaleOrig, yScale, yDomainMin, yDomainMax];
 }
 
-function makeChartAnnotated(selector, data, annotations) {
-	var n = 0;
-	data.forEach(function(d) {
-		d.X = n++;
-		d.Y = d.value;
-	});
+
+function noZoom() {
+	d3.event.preventDefault();
+}
+
+function baseChart(selector, data, clickFunction, annotations, annotationFunction) {
+	// preprocess the data
+	preprocessData(data);
 
 	var divWidth = 1000;
 	var divHeight = 480;
 
 	var svg = d3.select(selector)
-		.on("touchstart", nozoom)
-		.on("touchmove", nozoom)
+		.on("touchstart", noZoom)
+		.on("touchmove", noZoom)
 		.append("svg")
 		.attr("width", divWidth)
 		.attr("height", divHeight)
@@ -154,255 +67,171 @@ function makeChartAnnotated(selector, data, annotations) {
 	var width = +svg.attr("width") - margin.left - margin.right;
 	var height = +svg.attr("height") - margin.top - margin.bottom;
 
-	var zoom = d3.zoom()
+	var [xAxis, yAxis, xScale, xScaleOrig, yScale, yDomainMin, yDomainMax] = scaleAndAxis(
+		data,
+		width,
+		height);
+
+	// Create the line object
+	var lineObj = d3.line()
+		.x(function(d) { return xScale(d.X); })
+		.y(function(d) { return yScale(d.Y); });
+
+	// Initialise the zoom behaviour
+	var zoomObj = d3.zoom()
 		.scaleExtent([1, 50])
 		.translateExtent([[0, 0], [width, height]])
 		.extent([[0, 0], [width, height]])
-		.on("zoom", zoomed);
+		.on("zoom", zoomTransform);
 
-	var x = d3.scaleLinear().range([0, width]);
-	var x2 = d3.scaleLinear().range([0, width]);
-	var y = d3.scaleLinear().range([height, 0]);
+	function zoomTransform() {
+		transform = d3.event.transform;
+		// transform the axis
+		xScale.domain(transform.rescaleX(xScaleOrig).domain());
 
-	var xAxis = d3.axisBottom(x);
-	var yAxis = d3.axisLeft(y);
-	yAxis.ticks(0);
+		// transform the data line
+		svg.select(".line").attr("d", lineObj);
 
-	var xExtent = d3.extent(data, function(d) { return d.X; });
-	var xRange = xExtent[1] - xExtent[0];
-	var xDomainMin = xExtent[0] - xRange * 0.02;
-	var xDomainMax = xExtent[1] + xRange * 0.02;
+		// transform the circles
+		points.data(data)
+			.attr("cx", function(d) { return xScale(d.X); })
+			.attr("cy", function(d) { return yScale(d.Y); });
 
-	var yExtent = d3.extent(data, function(d) { return d.Y; });
-	var yRange = yExtent[1] - yExtent[0];
-	var yDomainMin = yExtent[0] - yRange * 0.05;
-	var yDomainMax = yExtent[1] + yRange * 0.05;
+		// transform the annotation lines (if any)
+		annoLines = gView.selectAll("line");
+		annoLines._groups[0].forEach(function(l) {
+			l.setAttribute("x1", xScale(l.getAttribute("cp_idx")));
+			l.setAttribute("x2", xScale(l.getAttribute("cp_idx")));
+		});
 
-	x.domain([xDomainMin, xDomainMax]);
-	y.domain([yDomainMin, yDomainMax]);
-	x2.domain(x.domain());
+		svg.select(".axis--x").call(xAxis);
+	}
 
-	svg.append("defs").append("clipPath")
+	// Build the SVG layer cake
+	// There are a few elements to this:
+	//
+	//  1. a clip path that ensures elements aren't drawn outside the 
+	//  axes. This is activated with css
+	//  2. axes and x axis label
+	//  3. wrapper "g" element with the zoom event
+	//  3. rectangle to keep the drawing
+	//  4. line
+	//  5. circles with a click event
+	//
+
+	// clip path
+	svg.append("defs")
+		.append("clipPath")
 		.attr("id", "clip")
 		.append("rect")
 		.attr("width", width - 18)
 		.attr("height", height)
 		.attr("transform", "translate(" + 18 + ",0)");
 
+	// y axis
 	svg.append("g")
 		.attr("class", "axis axis--y")
 		.attr("transform", "translate(" + 18 + ",0)")
 		.call(yAxis);
 
+	// x axis
 	svg.append("g")
 		.attr("class", "axis axis--x")
-		.attr("transform", "translate(0," + height + ")")
+		.attr("transform", "translate(0, " + height + ")")
 		.call(xAxis);
 
+	// x axis label
 	svg.append("text")
 		.attr("text-anchor", "middle")
 		.attr("class", "axis-label")
 		.attr("transform", "translate(" + (width - 20) + "," + (height + 50) + ")")
 		.text("Time");
 
-	var line = d3.line()
-		.x(function(d) { return x(d.X); })
-		.y(function(d) { return y(d.Y); });
+	// wrapper for zoom
+	var gZoom = svg.append("g").call(zoomObj);
 
-	var g = svg.append("g")
-		.call(zoom);
-
-	g.append("rect")
+	// rectangle for the graph area
+	gZoom.append("rect")
 		.attr("width", width)
 		.attr("height", height);
 
-	var view = g.append("g")
+	// view for the graph
+	var gView = gZoom.append("g")
 		.attr("class", "view");
 
-	view.append("path")
+	// add the line to the view
+	gView.append("path")
 		.datum(data)
 		.attr("class", "line")
-		.attr("d", line);
+		.attr("d", lineObj);
 
-	var points = view.selectAll("circle")
+	// add the points to the view
+	var points = gView.selectAll("circle")
 		.data(data)
-		.enter().append("circle")
-		.attr("cx", function(d) { return x(d.X); })
-		.attr("cy", function(d) { return y(d.Y); })
+		.enter()
+		.append("circle")
+		.attr("cx", function(d) { return xScale(d.X); })
+		.attr("cy", function(d) { return yScale(d.Y); })
 		.attr("data_X", function(d) { return d.X; })
 		.attr("data_Y", function(d) { return d.Y; })
-		.attr("r", 5);
+		.attr("r", 5)
+		.on("click", function(d, i) {
+			d.element = this;
+			return clickFunction(d, i);
+		});
 
-	function zoomed() {
-		t = d3.event.transform;
-		x.domain(t.rescaleX(x2).domain());
-		svg.select(".line").attr("d", line);
-		points.data(data)
-			.attr("cx", function(d) { return x(d.X); })
-			.attr("cy", function(d) { return y(d.Y); });
-		svg.select(".axis--x").call(xAxis);
-	}
-
-	function nozoom() {
-		d3.event.preventDefault();
-	}
-
+	// handle the annotations
 	annotations.forEach(function(a) {
 		for (i=0; i<points._groups[0].length; i++) {
 			p = points._groups[0][i];
-			if (p.getAttribute("data_X") == a.index) {
-				var elem = d3.select(p);
-				elem.classed("marked", "true");
-				view.append("line")
-					.attr("cp_idx", a.index)
-					.attr("y1", y(yDomainMax))
-					.attr("y2", y(yDomainMin))
-					.attr("x1", x(a.index))
-					.attr("x2", x(a.index))
-					.attr("class", "ann-line");
-				break;
-			}
+			if (p.getAttribute("data_X") != a.index)
+				continue;
+			var elem = d3.select(p);
+			annotationFunction(a, elem, gView, xScale, yScale, yDomainMin, yDomainMax);
 		}
 	});
 }
 
-function makeChartAnnotatedAdmin(selector, data, annotations) {
-	var n = 0;
-	data.forEach(function(d) {
-		d.X = n++;
-		d.Y = d.value;
-	});
-
-	var divWidth = 1000;
-	var divHeight = 480;
-
-	var svg = d3.select(selector)
-		.on("touchstart", nozoom)
-		.on("touchmove", nozoom)
-		.append("svg")
-		.attr("width", divWidth)
-		.attr("height", divHeight);
-
-	var margin = {top: 20, right: 20, bottom: 50, left: 50};
-	var width = +svg.attr("width") - margin.left - margin.right;
-	var height = +svg.attr("height") - margin.top - margin.bottom;
-
-	var zoom = d3.zoom()
-		.scaleExtent([1, 50])
-		.translateExtent([[0, 0], [width, height]])
-		.extent([[0, 0], [width, height]])
-		.on("zoom", zoomed);
-
-	var x = d3.scaleLinear().range([0, width]);
-	var x2 = d3.scaleLinear().range([0, width]);
-	var y = d3.scaleLinear().range([height, 0]);
-
-	var xAxis = d3.axisBottom(x);
-	var yAxis = d3.axisLeft(y);
-
-	var xExtent = d3.extent(data, function(d) { return d.X; });
-	var xRange = xExtent[1] - xExtent[0];
-	var xDomainMin = xExtent[0] - xRange * 0.02;
-	var xDomainMax = xExtent[1] + xRange * 0.02;
-
-	var yExtent = d3.extent(data, function(d) { return d.Y; });
-	var yRange = yExtent[1] - yExtent[0];
-	var yDomainMin = yExtent[0] - yRange * 0.05;
-	var yDomainMax = yExtent[1] + yRange * 0.05;
-
-	x.domain([xDomainMin, xDomainMax]);
-	y.domain([yDomainMin, yDomainMax]);
-	x2.domain(x.domain());
-
-	svg.append("defs").append("clipPath")
-		.attr("id", "clip")
-		.append("rect")
-		.attr("width", width - 30)
-		.attr("height", height)
-		.attr("transform", "translate(" + 30 + ",0)");
-
-	svg.append("g")
-		.attr("class", "axis axis--y")
-		.attr("transform", "translate(" + 30 + ",0)")
-		.call(yAxis);
-
-	svg.append("g")
-		.attr("class", "axis axis--x")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
-
-	svg.append("text")
-		.attr("text-anchor", "middle")
-		.attr("class", "axis-label")
-		.attr("transform", "translate(" + (width - 20) + "," + (height + 50) + ")")
-		.text("Time");
-
-	var line = d3.line()
-		.x(function(d) { return x(d.X); })
-		.y(function(d) { return y(d.Y); });
-
-	var g = svg.append("g")
-		.call(zoom);
-
-	g.append("rect")
-		.attr("width", width)
-		.attr("height", height);
-
-	var view = g.append("g")
-		.attr("class", "view");
-
-	view.append("path")
-		.datum(data)
-		.attr("class", "line")
-		.attr("d", line);
-
-	var points = view.selectAll("circle")
-		.data(data)
-		.enter().append("circle")
-		.attr("cx", function(d) { return x(d.X); })
-		.attr("cy", function(d) { return y(d.Y); })
-		.attr("data_X", function(d) { return d.X; })
-		.attr("data_Y", function(d) { return d.Y; })
-		.attr("r", 5)
-		.on("click", clicked);
-
-	function zoomed() {
-		t = d3.event.transform;
-		x.domain(t.rescaleX(x2).domain());
-		svg.select(".line").attr("d", line);
-		points.data(data)
-			.attr("cx", function(d) { return x(d.X); })
-			.attr("cy", function(d) { return y(d.Y); });
-		annolines = view.selectAll("line");
-		annolines._groups[0].forEach(function(l) {
-			l.setAttribute("x1", x(l.getAttribute("cp_idx")));
-			l.setAttribute("x2", x(l.getAttribute("cp_idx")));
-		});
-		svg.select(".axis--x").call(xAxis);
-	}
-
-	function clicked(d, i) {
+function annotateChart(selector, data) {
+	function handleClick(d, i) {
 		if (d3.event.defaultPrevented) return; // zoomed
-	}
-
-	function nozoom() {
-		d3.event.preventDefault();
-	}
-
-	annotations.forEach(function(a) {
-		for (i=0; i<points._groups[0].length; i++) {
-			p = points._groups[0][i];
-			if (p.getAttribute("data_X") == a.index) {
-				var elem = d3.select(p);
-				elem.classed(a.user, 'true');
-				view.append("line")
-					.attr("cp_idx", a.index)
-					.attr("y1", y(yDomainMax))
-					.attr("y2", y(yDomainMin))
-					.attr("x1", x(a.index))
-					.attr("x2", x(a.index))
-					.attr("class", "ann-line" + " " + a.user);
-			}
+		var elem = d3.select(d.element);
+		if (elem.classed("changepoint")) {
+			elem.style("fill", null);
+			elem.classed("changepoint", false);
+		} else {
+			elem.style("fill", "red");
+			elem.classed("changepoint", true);
 		}
-	});
+		updateTable();
+	}
+	baseChart(selector, data, handleClick, [], null);
+}
+
+function viewAnnotations(selector, data, annotations) {
+	function handleAnnotation(ann, elem, view, xScale, yScale, yDomainMin, yDomainMax) {
+		elem.classed("marked", true);
+		view.append("line")
+			.attr("cp_idx", ann.index)
+			.attr("y1", yScale(yDomainMax))
+			.attr("y2", yScale(yDomainMin))
+			.attr("x1", xScale(ann.index))
+			.attr("x2", xScale(ann.index))
+			.attr("class", "ann-line");
+	}
+	baseChart(selector, data, function() {}, annotations, handleAnnotation);
+}
+
+function adminViewAnnotations(selector, data, annotations) {
+	function handleAnnotation(ann, elem, view, xScale, yScale, yDomainMin, yDomainMax) {
+		elem.classed(ann.user, true);
+		view.append("line")
+			.attr("cp_idx", ann.index)
+			.attr("y1", yScale(yDomainMax))
+			.attr("y2", yScale(yDomainMin))
+			.attr("x1", xScale(ann.index))
+			.attr("x2", xScale(ann.index))
+			.attr("class", "ann-line" + " " + ann.user);
+	}
+	baseChart(selector, data, function() {}, annotations, handleAnnotation);
 }

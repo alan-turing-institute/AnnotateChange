@@ -129,6 +129,7 @@ def manage_users():
 @admin_required
 def manage_datasets():
     dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
+    dataset_list.sort(key=lambda x : x[1])
 
     form = AdminManageDatasetsForm()
     form.dataset.choices = dataset_list

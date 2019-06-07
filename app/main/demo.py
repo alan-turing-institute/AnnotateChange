@@ -76,8 +76,10 @@ DEMO_DATA = {
 
                 Don't worry if you weren't exactly correct on the first try. 
                 The goal of this introduction is to familiarise yourself with 
-                time series data and with change point detection in 
-                particular."""
+                time series data and with change point detection in particular. 
+                Note that in general we consider the change point to be the 
+                point where the new behaviour starts, not the last point of the 
+                current behaviour."""
                 )
             )
         },
@@ -212,7 +214,7 @@ DEMO_DATA = {
                     """
                 What we see here is a change in *trend*. Changes in trend are 
                 not always change points: gradual changes in direction are 
-                common and should not be considered *abrupt* changes. 
+                common and should not be considered to be *abrupt* changes. 
 
                 For trend changes it's not always easy to figure out exactly 
                 where the change occurs, so it's harder to get it exactly 

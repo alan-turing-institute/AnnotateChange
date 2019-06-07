@@ -2,7 +2,7 @@
 
 {% block styles %}
   {{ super() }}
-  <link rel="stylesheet" href="{{url_for('static', filename='user_index.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/index.css')}}">
 {% endblock %}
 
 {% block app_content %}
@@ -70,7 +70,7 @@
       </div>
     {% elif tasks_todo|length == 0 and tasks_done|length > 0 %}
       <div id="done">
-        <img src="{{ url_for('static', filename='done.png') }}">
+        <img src="{{ url_for('static', filename='img/done.png') }}">
         <span>
           No more annotations to do! Thank you so much for your help, 
           <b>you rock!</b>

@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 
 {% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static', filename='view_annotation.css')}}">{% endblock %}
-
-{% block app_content %}
-<h1>View Annotations</h1>
-
-<div id="graph"></div>
+  {{ super() }}
+  <link rel="stylesheet" href="{{url_for('static', filename='css/admin/view_annotation.css')}}">
 {% endblock %}
 
-
+{% block app_content %}
+  <h1>View Annotations</h1>
+  <div id="graph"></div>
+{% endblock %}
 
 {% block scripts %}
-{{ super() }}
+  {{ super() }}
   <script src="//d3js.org/d3.v5.min.js"></script>
   <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
   <script>adminViewAnnotations(

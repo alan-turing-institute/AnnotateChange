@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.2.4
+
+* Merge d3 code for maintainability
+* Clarify demo w.r.t. CP beginning or end of segment
+* Cosmetic improvements
+
 ## Version 0.2.3
 
 * Bugfix for sorting datasets that caused a crash

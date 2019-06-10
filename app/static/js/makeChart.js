@@ -79,7 +79,7 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 
 	// Initialise the zoom behaviour
 	var zoomObj = d3.zoom()
-		.scaleExtent([1, 50])
+		.scaleExtent([1, 100])
 		.translateExtent([[0, 0], [width, height]])
 		.extent([[0, 0], [width, height]])
 		.on("zoom", zoomTransform);

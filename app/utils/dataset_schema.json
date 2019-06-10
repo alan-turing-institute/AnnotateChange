@@ -54,18 +54,10 @@
 			"title": "The Time Schema",
 			"default": null,
 			"required": [
-				"type",
 				"format",
 				"raw"
 			],
 			"properties": {
-				"type": {
-					"$id": "#/properties/time/properties/type",
-					"type": "string",
-					"title": "The Type Schema",
-					"default": "",
-					"pattern": "^(.*)$"
-				},
 				"format": {
 					"$id": "#/properties/time/properties/format",
 					"type": "string",
@@ -79,6 +71,7 @@
 					"title": "The Raw Schema",
 					"items": {
 						"$id": "#/properties/time/properties/raw/items",
+						"type": "string",
 						"title": "The Items Schema",
 						"default": ""
 					}

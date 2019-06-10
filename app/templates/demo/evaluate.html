@@ -36,15 +36,15 @@
 <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
 <script>viewAnnotations(
 	"#graph_user",
-	{{ data.chart_data | safe }},
-	{{ annotations_user | safe }}
+	{{ data.chart_data | tojson }},
+	{{ annotations_user | tojson }}
 );
 </script>
 <script>
   viewAnnotations(
 	"#graph_true",
-	{{ data.chart_data | safe }},
-	{{ annotations_true | safe }}
+	{{ data.chart_data | tojson }},
+	{{ annotations_true | tojson }}
 );
 </script>
 {% endblock %}

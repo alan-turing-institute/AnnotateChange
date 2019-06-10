@@ -55,7 +55,7 @@
   <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
   <script src="{{ url_for('static', filename='js/updateTable.js') }}"></script>
   <script src="{{ url_for('static', filename='js/buttons.js') }}"></script>
-  <script>annotateChart("#graph", {{ data.chart_data | safe }});</script>
+  <script>annotateChart("#graph", {{ data.chart_data | tojson }});</script>
   <script>
     // reset button
     var reset = document.getElementById("btn-reset");

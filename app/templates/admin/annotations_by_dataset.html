@@ -16,8 +16,8 @@
   <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
   <script>adminViewAnnotations(
     '#graph',
-    {{ data.chart_data | safe }},
-    {{ data.annotations | safe }}
+    {{ data.chart_data | tojson }},
+    {{ data.annotations | tojson }}
     );
   </script>
 {% endblock scripts %}

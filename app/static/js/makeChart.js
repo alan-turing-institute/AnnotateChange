@@ -3,10 +3,12 @@
 
 function preprocessData(data) {
 	var n = 0;
-	data.forEach(function(d) {
-		d.X = n++;
-		d.Y = d.value;
-	});
+	cleanData = [];
+	for (i=0; i<data.values[0].raw.length; i++) {
+		d = data.values[0].raw[i];
+		cleanData.push({"X": n++, "Y": d});
+	}
+	return cleanData;
 }
 
 function scaleAndAxis(data, width, height) {
@@ -50,7 +52,7 @@ function noZoom() {
 
 function baseChart(selector, data, clickFunction, annotations, annotationFunction) {
 	// preprocess the data
-	preprocessData(data);
+	data = preprocessData(data);
 
 	var divWidth = 1000;
 	var divHeight = 480;

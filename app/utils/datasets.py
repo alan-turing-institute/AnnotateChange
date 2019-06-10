@@ -3,28 +3,9 @@
 """
 Dataset handling
 
-The dataset model is a JSON object as follows:
-
-    {
-        "name": "name of the dataset",
-        "n_obs": number of observations,
-        "n_dim": number of dimensions,
-        "series": {
-            "V1": {
-                "type": "float",
-                "raw": [list of observations]
-                },
-            "V2": {
-                "type": "int",
-                "raw": [list of observations]
-            },
-            "V3": {
-                "type": "category",
-                "levels": ["A", "B", "C"],
-                "raw": [list of observations]
-                }
-            }
-    }
+The dataset model is defined in the adjacent 'dataset_schema.json' file, which 
+is a JSONSchema schema definition. It can be easily edited at 
+www.jsonschema.net or yapi.demo.qunar.com/editor/
 
 Missing values must be denoted by 'NaN' (this is understood by the JSON 
 decoder).
@@ -35,56 +16,56 @@ Author: Gertjan van den Burg
 
 import hashlib
 import json
+import jsonschema
 import logging
 import os
-import re
 
 from flask import current_app
 
 LOGGER = logging.getLogger(__file__)
 
 
-def validate_dataset(filename):
-    """ Validate a dataset uploaded to the webapp
-    Return None on success and a string error on failure
-    """
+def load_schema():
+    pth = os.path.abspath(__file__)
+    basedir = os.path.dirname(pth)
+    schema_file = os.path.join(basedir, "dataset_schema.json")
+    if not os.path.exists(schema_file):
+        raise FileNotFoundError(schema_file)
+    with open(schema_file, "rb") as fp:
+        schema = json.load(fp)
+    return schema
 
-    with open(filename, "rb") as fid:
+
+def validate_dataset(filename):
+    if not os.path.exists(filename):
+        return "File not found."
+
+    with open(filename, "rb") as fp:
         try:
-            data = json.load(fid)
+            data = json.load(fp)
         except json.JSONDecodeError as err:
             return "JSON decoding error: %s" % err.msg
 
-    required_keys = ["name", "n_obs", "n_dim", "series"]
-    for key in required_keys:
-        if not key in data:
-            return "Required key missing: %s" % key
+    try:
+        schema = load_schema()
+    except FileNotFoundError:
+        return "Schema file not found."
 
-    if not re.fullmatch("\w+", data["name"]):
-        return "Name can only contain characters in the set [a-zA-Z0-9_]"
+    try:
+        jsonschema.validate(instance=data, schema=schema)
+    except jsonschema.ValidationError as err:
+        return "JSONSchema validation error: %s" % err.msg
 
     if len(data["series"]) != data["n_dim"]:
         return "Number of dimensions and number of series don't match"
 
-    required_keys = ["type", "raw"]
-    for idx, var in enumerate(data["series"]):
-        if not var == "V%i" % (idx + 1):
-            return "Unexpected variable name, expected 'V<int>', got %s" % var
-        vardict = data["series"][var]
-        for key in required_keys:
-            if not key in vardict:
-                return "Key '%s' missing for variable '%s'" % (key, var)
-        if vardict["type"] == "category":
-            if not "levels" in vardict:
-                return (
-                    "Variable '%s' has categorical type but 'levels' is missing"
-                    % (var)
-                )
-        if not len(vardict["raw"]) == data["n_obs"]:
-            return (
-                "Length of data for variable '%s' not equal to n_obs = %i"
-                % (var, data["n_obs"])
-            )
+    if "time" in data.keys():
+        if len(data["time"]["raw"]) != data["n_obs"]:
+            return "Number of time points doesn't match number of observations"
+
+    for var in data["series"]:
+        if len(var["raw"]) != data["n_obs"]:
+            return "Number of observations doesn't match for %s" % var["label"]
 
     return None
 
@@ -98,7 +79,7 @@ def get_name_from_dataset(filename):
 def dataset_is_demo(filename):
     with open(filename, "rb") as fid:
         data = json.load(fid)
-    return "demo" in data
+    return "demo" in data.keys()
 
 
 def get_demo_true_cps(name):
@@ -153,5 +134,7 @@ def load_data_for_chart(name, known_md5):
         return None
     with open(target_filename, "rb") as fid:
         data = json.load(fid)
-    chart_data = [{"value": x} for x in data["series"]["V1"]["raw"]]
+
+    chart_data = {"time": data["time"] if "time" in data else None, "values": 
+            data["series"]}
     return {"chart_data": chart_data}

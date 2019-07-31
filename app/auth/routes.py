@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import markdown
+import textwrap
 
 from flask import (
     render_template,
@@ -30,6 +32,41 @@ from app.auth.email import (
 )
 from app.models import User, Task
 from app.utils.tasks import generate_user_task
+
+
+LEGAL = markdown.markdown(
+    textwrap.dedent(
+        """
+        ## Terms and Conditions
+
+        The AnnotateChange application is created to construct a data set for 
+        the analysis of change point algorithms. As a user, you will be asked 
+        to annotate time series data. It is important that we can use these 
+        annotations freely and publish them under a permissive license.  
+
+        Therefore, we ask that you agree to the following terms and conditions.
+
+        1. Identifiable user data such as email address, password, and IP 
+        address will not be shared by us with any third party, unless we are 
+        required to do so by law. This information will only be used to provide 
+        authentication to the application and verify that you have access to 
+        the email address you provide us.
+
+        2. Annotations and any other information you provide us through use of 
+        the application are provided to us under a worldwide, royalty-free, 
+        non-exclusive, and perpetual license and can be made publically 
+        available by us under a permissive license and used for whatever 
+        purpose we see fit. In any publication of this annotation data users 
+        will only be identified by a numeric ID, not by personal identifiable 
+        information (such as email or IP address).
+
+        3. You agree that you will not revoke or seek invalidation of any 
+        license that you have granted under these Terms and conditions for any 
+        content you have provided us.
+
+        """
+    )
+)
 
 
 def auto_logout():
@@ -109,7 +146,9 @@ def register():
         )
 
         return redirect(url_for("auth.login"))
-    return render_template("auth/register.html", title="Register", form=form)
+    return render_template(
+        "auth/register.html", title="Register", form=form, legal=LEGAL
+    )
 
 
 @bp.route("/reset_password_request", methods=("GET", "POST"))

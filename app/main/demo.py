@@ -54,13 +54,20 @@ DEMO_DATA = {
             )
         },
         "annotate": {
-            "text": RUBRIC
-            + markdown.markdown(
+            "text": markdown.markdown(
                 textwrap.dedent(
                     """
+                Please mark the point(s) in the time series where an **abrupt 
+                change** in the behaviour of the series occurs.  The goal is to 
+                define segments of the time series that are separated by places 
+                where these abrupt changes occur. You can mark a point by 
+                clicking on it.
+
                 Click "Submit" when you have finished marking the change points 
                 or "No change points" when you believe there are none. You can 
-                reset the graph with the "Reset" button."""
+                reset the graph with the "Reset" button.
+
+                """
                 )
             )
         },
@@ -77,9 +84,10 @@ DEMO_DATA = {
                 Don't worry if you weren't exactly correct on the first try. 
                 The goal of this introduction is to familiarise yourself with 
                 time series data and with change point detection in particular. 
+
                 Note that in general we consider the change point to be the 
-                point where the new behaviour starts, not the last point of the 
-                current behaviour."""
+                point where the new behaviour *starts*, not the last point of 
+                the current behaviour."""
                 )
             )
         },
@@ -445,7 +453,7 @@ def demo_evaluate(demo_id, phase_id, form):
         annotations_true=annotations_true,
         text=demo_data["text"],
         form=form,
-        is_multi=is_multi
+        is_multi=is_multi,
     )
 
 

@@ -47,15 +47,19 @@ function submitOnClick(identifier) {
 	var obj = {};
 	obj["identifier"] = identifier;
 	obj["changepoints"] = [];
-	var i, cp;
+
+	var i, cp, xval, seen = [];
 	for (i=0; i<changepoints.length; i++) {
 		cp = changepoints[i];
+		xval = cp.getAttribute("data_X");
 		elem = {
 			id: i,
-			x: cp.getAttribute("data_X"),
-			y: cp.getAttribute("data_Y")
+			x: xval
 		};
+		if (seen.includes(xval))
+			continue;
 		obj["changepoints"].push(elem);
+		seen.push(xval);
 	}
 
 	var xhr = new XMLHttpRequest();
@@ -66,11 +70,7 @@ function submitOnClick(identifier) {
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
 			window.location.href = xhr.responseText;
-			console.log("XHR Success: " + xhr.responseText);
-		} else {
-			console.log("XHR Error: " + xhr.status);
 		}
 	};
 	xhr.send(JSON.stringify(obj));
 }
-

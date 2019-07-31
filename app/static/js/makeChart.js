@@ -119,7 +119,6 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 	//  3. rectangle to keep the drawing
 	//  4. line
 	//  5. circles with a click event
-	//
 
 	// clip path
 	svg.append("defs")

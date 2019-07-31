@@ -18,7 +18,8 @@ logger = logging.getLogger(__name__)
 RUBRIC = """
 Please mark the point(s) in the time series where an <b>abrupt change</b> in
  the behaviour of the series occurs. The goal is to define segments of the time 
- series that are separated by places where these abrupt changes occur.
+ series that are separated by places where these abrupt changes occur. Recall 
+ that it is also possible for there to be no such changes.
 <br>
 """
 
@@ -112,10 +113,12 @@ def annotate(task_id):
         flash(
             "An internal error occurred loading this dataset, the admin has been notified. Please try again later. We apologise for the inconvenience."
         )
+    is_multi = len(data["chart_data"]["values"]) > 1
     return render_template(
         "annotate/index.html",
         title=task.dataset.name.title(),
         identifier=task.id,
         data=data,
         rubric=RUBRIC,
+        is_multi=is_multi,
     )

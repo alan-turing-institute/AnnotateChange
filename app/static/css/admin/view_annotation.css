@@ -9,6 +9,12 @@
 	clip-path: url(#clip);
 }
 
+.z-line line {
+	stroke: #ccc;
+	shape-rendering: crispEdges;
+}
+
+
 .ann-line {
 	fill: none;
 	stroke-dasharray: 5;

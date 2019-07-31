@@ -19,6 +19,11 @@
 	clip-path: url(#clip);
 }
 
+.z-line line {
+	stroke: #ccc;
+	shape-rendering: crispEdges;
+}
+
 circle {
 	clip-path: url(#clip);
 	fill: blue;

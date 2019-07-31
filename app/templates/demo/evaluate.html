@@ -31,20 +31,27 @@
     {{ wtf.quick_form(form, button_map={'submit': 'primary'}) }}
   </div>
 </div>
+{% endblock %}
 
-<script src="//d3js.org/d3.v5.min.js"></script>
-<script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
-<script>viewAnnotations(
-	"#graph_user",
-	{{ data.chart_data | tojson }},
-	{{ annotations_user | tojson }}
-);
-</script>
-<script>
-  viewAnnotations(
-	"#graph_true",
-	{{ data.chart_data | tojson }},
-	{{ annotations_true | tojson }}
-);
-</script>
+{% block scripts %}
+  {{ super() }}
+  <script src="//d3js.org/d3.v5.min.js"></script>
+  {% if is_multi %}
+  <script src="{{ url_for('static', filename='js/makeChartMulti.js') }}"></script>
+  {% else %}
+  <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
+  {% endif %}
+  <script>viewAnnotations(
+    "#graph_user",
+    {{ data.chart_data | tojson }},
+    {{ annotations_user | tojson }}
+  );
+  </script>
+  <script>
+    viewAnnotations(
+      "#graph_true",
+      {{ data.chart_data | tojson }},
+      {{ annotations_true | tojson }}
+    );
+  </script>
 {% endblock %}

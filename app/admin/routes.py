@@ -129,7 +129,7 @@ def manage_users():
 @admin_required
 def manage_datasets():
     dataset_list = [(d.id, d.name) for d in Dataset.query.all()]
-    dataset_list.sort(key=lambda x : x[1])
+    dataset_list.sort(key=lambda x: x[1])
 
     form = AdminManageDatasetsForm()
     form.dataset.choices = dataset_list
@@ -281,11 +281,13 @@ def view_annotations_by_dataset(dset_id):
         anno_clean.append(dict(user=uid, index=ann.cp_index))
 
     data = load_data_for_chart(dataset.name, dataset.md5sum)
+    is_multi = len(data["chart_data"]["values"]) > 1
     data["annotations"] = anno_clean
     return render_template(
         "admin/annotations_by_dataset.html",
         title="View Annotations for dataset",
         data=data,
+        is_multi=is_multi,
     )
 
 

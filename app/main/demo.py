@@ -252,6 +252,32 @@ DEMO_DATA = {
             )
         },
     },
+    8: {
+        "dataset": {"name": "demo_800"},
+        "learn": {
+            "text": markdown.markdown(
+                textwrap.dedent(
+                    """
+                    In practice time series datasets are not just one 
+                    dimensional, but can be multidimensional too. A change 
+                    point in such a time series does not necessarily occur in 
+                    all dimensions simultaneously. It is therefore important to 
+                    evaluate the behaviour of each dimension individually, as 
+                    well as in relation to the others."""
+                )
+            )
+        },
+        "annotate": {"text": RUBRIC},
+        "evaluate": {
+            "text": markdown.markdown(
+                textwrap.dedent(
+                    """
+                        In this example of a multidimensional time series, the 
+                        change only occurred in a single dimension."""
+                )
+            )
+        },
+    },
 }
 
 
@@ -373,13 +399,16 @@ def demo_annotate(demo_id):
             "error",
         )
         return redirect(url_for("main.index"))
+
     chart_data = load_data_for_chart(dataset.name, dataset.md5sum)
+    is_multi = len(chart_data["chart_data"]["values"]) > 1
     return render_template(
         "annotate/index.html",
         title="Introduction – %i" % demo_id,
         data=chart_data,
         rubric=demo_data["text"],
         identifier=demo_id,
+        is_multi=is_multi,
     )
 
 
@@ -398,6 +427,7 @@ def demo_evaluate(demo_id, phase_id, form):
         name=DEMO_DATA[demo_id]["dataset"]["name"]
     ).first()
     chart_data = load_data_for_chart(dataset.name, dataset.md5sum)
+    is_multi = len(chart_data["chart_data"]["values"]) > 1
     true_changepoints = get_demo_true_cps(dataset.name)
     if true_changepoints is None:
         flash(
@@ -415,6 +445,7 @@ def demo_evaluate(demo_id, phase_id, form):
         annotations_true=annotations_true,
         text=demo_data["text"],
         form=form,
+        is_multi=is_multi
     )
 
 

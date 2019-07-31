@@ -52,9 +52,13 @@
 {% block scripts %}
   {{ super() }}
   <script src="//d3js.org/d3.v5.min.js"></script>
-  <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
   <script src="{{ url_for('static', filename='js/updateTable.js') }}"></script>
   <script src="{{ url_for('static', filename='js/buttons.js') }}"></script>
+  {% if is_multi  %}
+  <script src="{{ url_for('static', filename='js/makeChartMulti.js') }}"></script>
+  {% else %}
+  <script src="{{ url_for('static', filename='js/makeChart.js') }}"></script>
+  {% endif %}
   <script>annotateChart("#graph", {{ data.chart_data | tojson }});</script>
   <script>
     // reset button

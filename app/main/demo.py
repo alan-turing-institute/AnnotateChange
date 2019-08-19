@@ -336,10 +336,9 @@ def process_annotations(demo_id):
         )
         return redirect(url_for("main.index"))
 
-    if annotation["changepoints"] is None:
-        retval = []
-    else:
-        retval = [cp["x"] for cp in annotation["changepoints"]]
+    retval = []
+    if not annotation["changepoints"] is None:
+        retval = [int(cp["x"]) for cp in annotation["changepoints"]]
 
     # If the user is already introduced, we assume that their demo annotations
     # are already in the database, and thus we don't put them back in (because

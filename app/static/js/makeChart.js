@@ -50,12 +50,22 @@ function noZoom() {
 	d3.event.preventDefault();
 }
 
-function baseChart(selector, data, clickFunction, annotations, annotationFunction) {
+function baseChart(
+	selector,
+	data,
+	clickFunction,
+	annotations,
+	annotationFunction,
+	divWidth,
+	divHeight
+) {
+	if (divWidth === null || typeof divWidth === 'undefined')
+		divWidth = 1000;
+	if (divHeight === null || typeof divHeight === 'undefined')
+		divHeight = 480;
+
 	// preprocess the data
 	data = preprocessData(data);
-
-	var divWidth = 1000;
-	var divHeight = 480;
 
 	var svg = d3.select(selector)
 		.on("touchstart", noZoom)
@@ -220,7 +230,7 @@ function viewAnnotations(selector, data, annotations) {
 			.attr("x2", xScale(ann.index))
 			.attr("class", "ann-line");
 	}
-	baseChart(selector, data, function() {}, annotations, handleAnnotation);
+	baseChart(selector, data, function() {}, annotations, handleAnnotation, null, 300);
 }
 
 function adminViewAnnotations(selector, data, annotations) {

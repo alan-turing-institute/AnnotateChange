@@ -61,7 +61,8 @@ DEMO_DATA = {
                 change** in the behaviour of the series occurs.  The goal is to 
                 define segments of the time series that are separated by places 
                 where these abrupt changes occur. You can mark a point by 
-                clicking on it.
+                clicking on it. A marked point can be unmarked by clicking on 
+                it again.
 
                 Click "Submit" when you have finished marking the change points 
                 or "No change points" when you believe there are none. You can 

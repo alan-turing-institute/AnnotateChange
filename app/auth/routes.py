@@ -39,10 +39,10 @@ LEGAL = markdown.markdown(
         """
         ## Terms and Conditions
 
-        The AnnotateChange application is created to construct a data set for 
-        the analysis of change point algorithms. As a user, you will be asked 
-        to annotate time series data. It is important that we can use these 
-        annotations freely and publish them under a permissive license.  
+        The AnnotateChange application was created to construct a data set for 
+        the analysis of change point detection algorithms. As a user, you will 
+        be asked to annotate time series data. It is important that we can use 
+        these annotations freely and publish them under a permissive license. 
 
         Therefore, we ask that you agree to the following terms and conditions.
 
@@ -141,7 +141,8 @@ def register():
 
         send_email_confirmation_email(user)
         flash(
-            "An email has been sent to confirm your account, please check your email (including the spam folder).",
+            "An email has been sent to confirm your account, please check "
+            "your email (including the spam folder).",
             "info",
         )
 

@@ -61,7 +61,7 @@
             <tr>
               <td>
                 <a href="{{ url_for('main.annotate', task_id=task.id) }}">
-                  {{ task.dataset.name | title }}
+                  Dataset {{ task.dataset.id | title }}
                 </a>
               </td>
             </tr>
@@ -87,7 +87,7 @@
           </thead>
           {% for task in tasks_done %}
             <tr>
-              <td>{{ task.dataset.name | title }}</td>
+              <td>Dataset {{ task.dataset.id | title }}</td>
               <td>{{ task.annotated_on }}</td>
             </tr>
           {% endfor %}

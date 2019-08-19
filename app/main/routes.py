@@ -113,10 +113,11 @@ def annotate(task_id):
         flash(
             "An internal error occurred loading this dataset, the admin has been notified. Please try again later. We apologise for the inconvenience."
         )
+    title = f"Dataset: {task.dataset.id}"
     is_multi = len(data["chart_data"]["values"]) > 1
     return render_template(
         "annotate/index.html",
-        title=task.dataset.name.title(),
+        title=title,
         identifier=task.id,
         data=data,
         rubric=RUBRIC,

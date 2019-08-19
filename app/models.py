@@ -29,6 +29,11 @@ class User(UserMixin, db.Model):
     # after all demo tasks completed:
     is_introduced = db.Column(db.Boolean(), default=False)
 
+    # checkboxes during registration
+    read_toc = db.Column(db.Boolean(), default=False)
+    wants_credit = db.Column(db.Boolean(), default=False)
+    wants_updates = db.Column(db.Boolean(), default=False)
+
     def __repr__(self):
         return "<User %r>" % self.username
 

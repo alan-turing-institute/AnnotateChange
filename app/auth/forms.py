@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from flask import current_app
+from flask import current_app, flash
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from wtforms.validators import (
+    DataRequired,
+    Email,
+    EqualTo,
+    Optional,
+    ValidationError,
+)
 
 from app.models import User
 
@@ -18,12 +24,24 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
+    fullname = StringField("Full Name (optional)", validators=[])
     password = PasswordField("Password", validators=[DataRequired()])
     password2 = PasswordField(
         "Repeat Password", validators=[DataRequired(), EqualTo("password")]
     )
-    toc = BooleanField("I agree to the Terms and Conditions.", 
-            validators=[DataRequired(), ])
+    toc = BooleanField(
+        "I agree to the Terms and Conditions.", validators=[DataRequired()]
+    )
+    credit = BooleanField(
+        "Check this box if you would like to be publically credited with having "
+        "contributed to this work. By default, users will remain anonymous.",
+        validators=[Optional()],
+    )
+    updated = BooleanField(
+        "Check this box if you wish to be kept up to date with the "
+        "progress of this work by email.",
+        validators=[Optional()],
+    )
     submit = SubmitField("Register")
 
     def validate_username(self, username):
@@ -55,6 +73,16 @@ class RegistrationForm(FlaskForm):
                     "you unfortunately do not have access to "
                     "AnnotateChange at this time."
                 )
+
+    def validate_credit(self, credit):
+        if credit.data and not self.fullname.data:
+            flash(
+                "Please provide your full name if you wish to "
+                "be credited with contributing to this work.", "error")
+            raise ValidationError(
+                "Please provide your full name if you wish to "
+                "be credited with contributing to this work."
+            )
 
 
 class ResetPasswordRequestForm(FlaskForm):

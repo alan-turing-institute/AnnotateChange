@@ -382,6 +382,53 @@ def process_annotations(demo_id):
     return retval
 
 
+def get_user_feedback(true_cp, user_cp):
+    """Generate HTML to show as feedback to the user"""
+    user_cp = [int(x) for x in user_cp]
+
+    correct = []
+    window = []
+    incorrect = []
+    rem_true = list(true_cp)
+
+    for cp in user_cp:
+        if cp in rem_true:
+            correct.append(cp)
+            rem_true.remove(cp)
+    user_cp = [x for x in user_cp if not x in correct]
+
+    for cp in user_cp:
+        to_delete = []
+        for y in rem_true:
+            if abs(cp - y) < 5:
+                window.append(cp)
+                break
+        for y in to_delete:
+            rem_true.remove(y)
+    user_cp = [x for x in user_cp if not x in window]
+
+    for cp in user_cp:
+        incorrect.append(cp)
+
+    n_correct = len(correct)
+    n_window = len(window)
+    n_fp = len(incorrect)
+
+    text = "\n\n*Feedback:*\n\n"
+    if len(true_cp) == len(user_cp) == 0:
+        text += " - *Correctly identified that there are no change points.*\n"
+    if len(true_cp) > 0:
+        text += f"- *Number of changepoints exactly correct: {n_correct}.*\n"
+    if n_window:
+        text += f"- *Number of points correct within a 5-step window: {n_window}.*\n"
+    if n_fp:
+        text += f"- *Number of incorrectly identified points: {n_fp}.*"
+    text.rstrip()
+
+    text = markdown.markdown(text)
+    return text
+
+
 def demo_learn(demo_id, form):
     demo_data = DEMO_DATA[demo_id]["learn"]
     return render_template(
@@ -443,6 +490,9 @@ def demo_evaluate(demo_id, phase_id, form):
             "error",
         )
         return redirect(url_for("main.index"))
+
+    feedback = get_user_feedback(true_changepoints, user_changepoints)
+
     annotations_true = [dict(index=x) for x in true_changepoints]
     annotations_user = [dict(index=x) for x in user_changepoints]
     return render_template(
@@ -452,6 +502,7 @@ def demo_evaluate(demo_id, phase_id, form):
         annotations_user=annotations_user,
         annotations_true=annotations_true,
         text=demo_data["text"],
+        feedback=feedback,
         form=form,
         is_multi=is_multi,
     )

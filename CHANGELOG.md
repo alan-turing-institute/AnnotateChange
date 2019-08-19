@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.0
+
+* Add support for multidimensional datasets
+
 ## Version 0.2.4
 
 * Merge d3 code for maintainability

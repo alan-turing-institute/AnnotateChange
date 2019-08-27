@@ -448,7 +448,7 @@ def process_annotations(demo_id):
     return retval
 
 
-def metrics(true_cp, user_cp):
+def metrics(true_cp, user_cp, k=5):
     true_cp = [int(x) for x in true_cp]
     user_cp = [int(x) for x in user_cp]
 
@@ -466,8 +466,9 @@ def metrics(true_cp, user_cp):
     for cp in user_cp:
         to_delete = []
         for y in rem_true:
-            if abs(cp - y) < 5:
+            if abs(cp - y) < k:
                 window.append(cp)
+                to_delete.append(y)
                 break
         for y in to_delete:
             rem_true.remove(y)
@@ -479,12 +480,13 @@ def metrics(true_cp, user_cp):
     n_correct = len(correct)
     n_window = len(window)
     n_fp = len(incorrect)
-    return n_correct, n_window, n_fp
+    n_fn = len(rem_true)
+    return n_correct, n_window, n_fp, n_fn
 
 
 def get_user_feedback(true_cp, user_cp):
     """Generate HTML to show as feedback to the user"""
-    n_correct, n_window, n_fp = metrics(true_cp, user_cp)
+    n_correct, n_window, n_fp, n_fn = metrics(true_cp, user_cp)
 
     text = "\n\n*Feedback:*\n\n"
     if len(true_cp) == len(user_cp) == 0:
@@ -494,7 +496,9 @@ def get_user_feedback(true_cp, user_cp):
     if n_window:
         text += f"- *Number of points correct within a 5-step window: {n_window}.*\n"
     if n_fp:
-        text += f"- *Number of incorrectly identified points: {n_fp}.*"
+        text += f"- *Number of incorrectly identified points: {n_fp}.*\n"
+    if n_fn:
+        text += f"- *Number of missed change points: {n_fn}.*"
     text.rstrip()
 
     text = markdown.markdown(text)

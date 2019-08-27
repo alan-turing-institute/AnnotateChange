@@ -234,6 +234,35 @@ DEMO_DATA = {
         },
     },
     7: {
+        "dataset": {"name": "demo_650"},
+        "learn": {
+            "text": markdown.mardown(
+                textwrap.dedent(
+                    """
+                The datasets we've seen so far are all relatively well behaved, 
+                but real-world time series are often more chaotic.
+                """
+                )
+            )
+        },
+        "annotate": {"text": RUBRIC},
+        "evaluate": {
+            "text": markdown.markdown(
+                textwrap.dedent(
+                    """'
+                This was an example of a [random 
+                walk](https://en.wikipedia.org/wiki/Random_Walk), without a 
+                change point. Some time series data will look similar to this 
+                random walk, in the sense that it moves around, changes, but 
+                does not change *abruptly*. This is important to keep in mind, 
+                because not all datasets that you'll see will necessarily have 
+                change points (it's up to you to decide!)
+                """)
+
+                )
+            },
+    },
+    8: {
         "dataset": {"name": "demo_700"},
         "learn": {
             "text": markdown.markdown(
@@ -261,7 +290,7 @@ DEMO_DATA = {
             )
         },
     },
-    8: {
+    9: {
         "dataset": {"name": "demo_800"},
         "learn": {
             "text": markdown.markdown(

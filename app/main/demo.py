@@ -331,18 +331,23 @@ def demo_performance(user_id):
         ).first()
         annotations = (
             Annotation.query.join(Task, Annotation.task)
-            .filter_by(task_id=task.id)
+            .filter_by(id=task.id)
             .all()
         )
+
         true_cp = get_demo_true_cps(dataset.name)
-        user_cp = [a.cp_index for a in annotations]
+        user_cp = [a.cp_index for a in annotations if not a.cp_index is None]
         if len(true_cp) == len(user_cp) == 0:
             score += 1
             continue
 
-        n_correct, n_window, n_fp = metrics(true_cp, user_cp)
-        score += (n_correct + n_window - n_fp) / len(true_cp)
-    return score / len(DEMO_DATA)
+        n_correct, n_window, n_fp, n_fn = metrics(true_cp, user_cp)
+        n_tp = n_correct + n_window
+        f1 = (2 * n_tp) / (2 * n_tp + n_fp + n_fn)
+
+        score += f1
+    score /= len(DEMO_DATA)
+    return score
 
 
 def redirect_user(demo_id, phase_id):

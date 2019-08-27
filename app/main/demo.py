@@ -290,12 +290,48 @@ DEMO_DATA = {
 }
 
 
+def demo_performance(user_id):
+    score = 0
+    for demo_id in DEMO_DATA:
+        dataset = Dataset.query.filter_by(
+            name=DEMO_DATA[demo_id]["dataset"]["name"]
+        ).first()
+        task = Task.query.filter_by(
+            annotator_id=user_id, dataset_id=dataset.id
+        ).first()
+        annotations = (
+            Annotation.query.join(Task, Annotation.task)
+            .filter_by(task_id=task.id)
+            .all()
+        )
+        true_cp = get_demo_true_cps(dataset.name)
+        user_cp = [a.cp_index for a in annotations]
+        if len(true_cp) == len(user_cp) == 0:
+            score += 1
+            continue
+
+        n_correct, n_window, n_fp = metrics(true_cp, user_cp)
+        score += (n_correct + n_window - n_fp) / len(true_cp)
+    return score / len(DEMO_DATA)
+
+
 def redirect_user(demo_id, phase_id):
     last_demo_id = max(DEMO_DATA.keys())
     demo_last_phase_id = 3
     if demo_id == last_demo_id and phase_id == demo_last_phase_id:
         # User is already introduced (happens if they redo the demo)
         if current_user.is_introduced:
+            return redirect(url_for("main.index"))
+
+        # check user performance
+        if demo_performance(current_user.id) < 0.75:
+            flash(
+                "Unfortunately your performance on the introduction "
+                "datasets was not as high as we would like. Please go "
+                "through the introduction one more time to make sure "
+                "that you understand and are comfortable with change "
+                "point detection."
+            )
             return redirect(url_for("main.index"))
 
         # mark user as introduced
@@ -382,8 +418,8 @@ def process_annotations(demo_id):
     return retval
 
 
-def get_user_feedback(true_cp, user_cp):
-    """Generate HTML to show as feedback to the user"""
+def metrics(true_cp, user_cp):
+    true_cp = [int(x) for x in true_cp]
     user_cp = [int(x) for x in user_cp]
 
     correct = []
@@ -413,6 +449,12 @@ def get_user_feedback(true_cp, user_cp):
     n_correct = len(correct)
     n_window = len(window)
     n_fp = len(incorrect)
+    return n_correct, n_window, n_fp
+
+
+def get_user_feedback(true_cp, user_cp):
+    """Generate HTML to show as feedback to the user"""
+    n_correct, n_window, n_fp = metrics(true_cp, user_cp)
 
     text = "\n\n*Feedback:*\n\n"
     if len(true_cp) == len(user_cp) == 0:

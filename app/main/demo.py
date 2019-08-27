@@ -236,7 +236,7 @@ DEMO_DATA = {
     7: {
         "dataset": {"name": "demo_650"},
         "learn": {
-            "text": markdown.mardown(
+            "text": markdown.markdown(
                 textwrap.dedent(
                     """
                 The datasets we've seen so far are all relatively well behaved, 
@@ -249,18 +249,19 @@ DEMO_DATA = {
         "evaluate": {
             "text": markdown.markdown(
                 textwrap.dedent(
-                    """'
-                This was an example of a [random 
-                walk](https://en.wikipedia.org/wiki/Random_Walk), without a 
-                change point. Some time series data will look similar to this 
-                random walk, in the sense that it moves around, changes, but 
-                does not change *abruptly*. This is important to keep in mind, 
+                    """
+                This was an example of a <a 
+                href="https://en.wikipedia.org/wiki/Random_walk" 
+                target="_blank">random walk</a> without a change point. Some 
+                time series data will look similar to this random walk, in the 
+                sense that it varies over time and changes, but doesn't 
+                actually change *abruptly*.  This is important to keep in mind, 
                 because not all datasets that you'll see will necessarily have 
                 change points (it's up to you to decide!)
-                """)
-
+                """
                 )
-            },
+            )
+        },
     },
     8: {
         "dataset": {"name": "demo_700"},
@@ -301,7 +302,7 @@ DEMO_DATA = {
                     point in such a time series does not necessarily occur in 
                     all dimensions simultaneously. It is therefore important to 
                     evaluate the behaviour of each dimension individually, as 
-                    well as in relation to the others."""
+                    well as in relation to each other."""
                 )
             )
         },

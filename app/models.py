@@ -34,6 +34,9 @@ class User(UserMixin, db.Model):
     wants_credit = db.Column(db.Boolean(), default=False)
     wants_updates = db.Column(db.Boolean(), default=False)
 
+    # full name
+    fullname = db.Column(db.String(256), unique=False, nullable=True)
+
     def __repr__(self):
         return "<User %r>" % self.username
 

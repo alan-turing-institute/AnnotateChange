@@ -137,7 +137,7 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 
 		// transform the data lines
 		for (j=0; j<numCharts; j++) {
-			container.select("#line-"+j).attr("d", lineObjects[j]);
+			bigWrapper.select("#line-"+j).attr("d", lineObjects[j]);
 		}
 
 		// transform the points
@@ -150,7 +150,7 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 		svg.select(".x-axis").call(axes.xAxis);
 
 		// transform the annotation lines (if any)
-		annoLines = container.selectAll(".ann-line")
+		annoLines = bigWrapper.selectAll(".ann-line")
 		annoLines._groups[0].forEach(function(l) {
 			l.setAttribute("x1", axes.xScale(l.getAttribute("cp_idx")));
 			l.setAttribute("x2", axes.xScale(l.getAttribute("cp_idx")));
@@ -169,20 +169,20 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 		.attr("height", height)
 		.attr("transform", "translate(0, 0)");
 
-	var container = svg.append("g")
-		.attr("class", "container")
+	var bigWrapper = svg.append("g")
+		.attr("class", "bigWrapper")
 		.attr('transform', 'translate(' + visPadding.left + ',' + visPadding.top + ')');
 
 	var ytrans = numCharts * (lineHeight + chartPadding) - chartPadding / 2;
 
 	// x axis
-	container.append("g")
+	bigWrapper.append("g")
 		.attr("class", "x-axis")
 		.attr("transform", "translate(0, " + ytrans + ")")
 		.call(axes.xAxis);
 
 	// x axis label
-	container.append("text")
+	bigWrapper.append("text")
 		.attr("text-anchor", "middle")
 		.attr("class", "axis-label")
 		.attr("transform", "translate(" + (width - 20) + "," + 
@@ -190,7 +190,7 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 		.text("Time");
 
 	// wrapper for zoom
-	var gZoom  = container.append("g").call(zoomObj);
+	var gZoom = bigWrapper.append("g").call(zoomObj);
 
 	// rectangle for the graph area
 	gZoom.append("rect")

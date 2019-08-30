@@ -99,16 +99,15 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 	var pointSets = {}
 
 	var lineHeight = 150;
-	var lineWidth = 800;
+	lineWidth = 1000;
 
 	var chartPadding = 30;
-	var chartWidth = 1000;
 
 	var visPadding = {
 		top: 10,
-		right: 20,
+		right: 0,
 		bottom: 10,
-		left: 70,
+		left: 0,
 		middle: 50
 	};
 
@@ -158,7 +157,7 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 	}
 
 	var svg = d3.select(selector).append('svg')
-		.attr("width", chartWidth)
+		.attr("width", lineWidth)
 		.attr("height", height);
 
 	svg.append("defs")

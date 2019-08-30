@@ -3,7 +3,7 @@
 
 {% block styles %}
 {{ super() }}
-<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="{{ bootstrap_find_resource('css/jquery.dataTables.min.css', cdn='datatables', use_minified=True) }}">
 {% endblock %}
 
 {% block app_content %}

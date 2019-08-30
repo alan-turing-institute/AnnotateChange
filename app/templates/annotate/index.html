@@ -51,7 +51,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="//d3js.org/d3.v5.min.js"></script>
+  <script src="{{ bootstrap_find_resource('d3.v5.js', cdn='d3', use_minified=True) }}"></script>
   <script src="{{ url_for('static', filename='js/updateTable.js') }}"></script>
   <script src="{{ url_for('static', filename='js/buttons.js') }}"></script>
   {% if is_multi  %}

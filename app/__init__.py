@@ -8,7 +8,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from flask import Flask
-from flask_bootstrap import Bootstrap, WebCDN, bootstrap_find_resource
+from flask_bootstrap import Bootstrap, WebCDN
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -38,13 +38,17 @@ def create_app(config_class=Config):
     mail.init_app(app)
     bootstrap.init_app(app)
 
-    # Set the boostrap jquery CDN
+    # Register CDNs
+    app.extensions["bootstrap"]["cdns"]["bootstrap"] = WebCDN(
+        "/static/resources/bootstrap/"
+    )
     app.extensions["bootstrap"]["cdns"]["jquery"] = WebCDN(
-        "//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/"
+        "/static/resources/jquery/"
     )
     app.extensions["bootstrap"]["cdns"]["datatables"] = WebCDN(
-        "//cdn.datatables.net/1.10.19/"
+        "/static/resources/datatables/"
     )
+    app.extensions["bootstrap"]["cdns"]["d3"] = WebCDN("/static/resources/d3/")
 
     # Initialize the instance directory and necessary subdirectories
     os.makedirs(app.instance_path, exist_ok=True)

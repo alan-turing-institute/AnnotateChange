@@ -38,7 +38,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="//d3js.org/d3.v5.min.js"></script>
+  <script src="{{ bootstrap_find_resource('d3.v5.js', cdn='d3', use_minified=True) }}"></script>
   {% if is_multi %}
   <script src="{{ url_for('static', filename='js/makeChartMulti.js') }}"></script>
   {% else %}

@@ -33,6 +33,8 @@ function preprocess(data) {
 function getLabelData(data, lbl) {
 	var lblData = [];
 	for (i=0; i<data.length; i++) {
+		if (isNaN(data[i][lbl]))
+			continue;
 		var item = {"X": data[i]["X"], "Y": data[i][lbl]};
 		lblData.push(item);
 	}

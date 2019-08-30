@@ -54,7 +54,7 @@ def validate_dataset(filename):
     try:
         jsonschema.validate(instance=data, schema=schema)
     except jsonschema.ValidationError as err:
-        return "JSONSchema validation error: %s" % err.msg
+        return "JSONSchema validation error: %s" % err.message
 
     if len(data["series"]) != data["n_dim"]:
         return "Number of dimensions and number of series don't match"

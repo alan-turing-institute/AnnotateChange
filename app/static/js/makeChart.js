@@ -59,6 +59,14 @@ function baseChart(
 	divWidth,
 	divHeight
 ) {
+	/* Note:
+	 * It may be tempting to scale the width/height of the div to be 
+	 * proportional to the size of the window. However this may cause some 
+	 * users with wide screens to perceive changes in the time series 
+	 * differently than others because the horizontal axis is more 
+	 * stretched out. It is therefore better to keep the size of the graph 
+	 * the same for all users.
+	 */
 	if (divWidth === null || typeof divWidth === 'undefined')
 		divWidth = 1000;
 	if (divHeight === null || typeof divHeight === 'undefined')

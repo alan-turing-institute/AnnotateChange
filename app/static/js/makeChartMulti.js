@@ -98,8 +98,16 @@ function baseChart(selector, data, clickFunction, annotations, annotationFunctio
 	var lineObjects = {};
 	var pointSets = {}
 
+	/* Note:
+	 * It may be tempting to scale the width/height of the div to be 
+	 * proportional to the size of the window. However this may cause some 
+	 * users with wide screens to perceive changes in the time series 
+	 * differently than others because the horizontal axis is more 
+	 * stretched out. It is therefore better to keep the size of the graph 
+	 * the same for all users.
+	 */
 	var lineHeight = 150;
-	lineWidth = 1000;
+	var lineWidth = 1000;
 
 	var chartPadding = 30;
 

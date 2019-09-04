@@ -284,9 +284,17 @@ DEMO_DATA = {
             "text": markdown.markdown(
                 textwrap.dedent(
                     """
-                As you can see from this example, changes in seasonality can 
-                occur as well.  We expect that these changes are quite rare, 
-                but it's nevertheless good to be aware of them."""
+                As you can see from this example, changes in the periodicity of 
+                the seasonal effect can occur as well. We expect that these 
+                kinds of changes are quite rare, but it's nevertheless good to 
+                be aware of them. 
+
+                It is also important to note that seasonal effects on their own 
+                do not constitute change points. For instance, a shift from the 
+                winter season to the summer will show a change in passenger 
+                numbers at the airport, but this will generally not be an 
+                *abrupt* change.
+                """
                 )
             )
         },

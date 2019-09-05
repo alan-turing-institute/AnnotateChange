@@ -60,7 +60,9 @@
 <script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
 <script>
 	$(document).ready(function() {
-		$('#user-table').DataTable();
+    $('#user-table').DataTable({
+      "pageLength": 25
+    });
 	});
 </script>
 <script>

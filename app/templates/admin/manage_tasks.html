@@ -41,5 +41,5 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
-<script>$(document).ready(function() { $('#tasks').DataTable(); });</script>
+  <script>$(document).ready(function() { $('#tasks').DataTable({"pageLength": 25}); });</script>
 {% endblock scripts %}

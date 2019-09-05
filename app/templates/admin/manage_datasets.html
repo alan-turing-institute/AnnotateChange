@@ -58,7 +58,9 @@ dataset <b>and</b> all associated tasks and annotations. Are you sure?") }}
 <script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
 <script>
 	$(document).ready(function() {
-		$('#datasets-table').DataTable();
+    $('#datasets-table').DataTable({
+      "pageLength": 25
+    });
 	});
 </script>
 <script>

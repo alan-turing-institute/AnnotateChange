@@ -38,7 +38,9 @@
 <script src="{{ bootstrap_find_resource('js/jquery.dataTables.js', cdn='datatables', use_minified=True) }}"></script>
 <script>
 	$(document).ready(function() {
-		$('#annotations-table').DataTable();
+		$('#annotations-table').DataTable({
+        "pageLength": 25
+      });
 	});
 </script>
 {% endblock scripts %}

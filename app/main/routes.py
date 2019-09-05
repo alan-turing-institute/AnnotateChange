@@ -88,6 +88,7 @@ def annotate(task_id):
         # send the annotation as email to the admin for backup
         record = {
             "user_id": task.annotator_id,
+            "dataset_name": task.dataset.name,
             "dataset_id": task.dataset_id,
             "task_id": task.id,
             "annotations_raw": annotation,

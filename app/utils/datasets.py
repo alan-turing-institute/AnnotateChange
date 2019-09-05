@@ -18,6 +18,7 @@ import hashlib
 import json
 import jsonschema
 import logging
+import math
 import os
 
 from flask import current_app
@@ -65,11 +66,18 @@ def validate_dataset(filename):
         if None in data["time"]["raw"]:
             return "Null is not supported in time axis. Use 'NaN' instead."
 
+    has_missing = False
     for var in data["series"]:
         if len(var["raw"]) != data["n_obs"]:
             return "Number of observations doesn't match for %s" % var["label"]
         if None in var["raw"]:
             return "Null is not supported in series. Use 'NaN' instead."
+        has_missing = has_missing or any(map(math.isnan, var["raw"]))
+
+    # this doesn't happen in any dataset yet, so let's not implement it until 
+    # we need it.
+    if data["n_dim"] > 1 and has_missing:
+        return "Missing values are not yet supported for multidimensional data"
 
     return None
 
@@ -139,6 +147,8 @@ def load_data_for_chart(name, known_md5):
     with open(target_filename, "rb") as fid:
         data = json.load(fid)
 
-    chart_data = {"time": data["time"] if "time" in data else None, "values": 
-            data["series"]}
+    chart_data = {
+        "time": data["time"] if "time" in data else None,
+        "values": data["series"],
+    }
     return {"chart_data": chart_data}

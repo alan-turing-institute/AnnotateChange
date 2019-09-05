@@ -4,10 +4,18 @@
 function preprocessData(data) {
 	var n = 0;
 	cleanData = [];
+	run = [];
 	for (i=0; i<data.values[0].raw.length; i++) {
 		d = data.values[0].raw[i];
-		cleanData.push({"X": n++, "Y": d});
+		if (isNaN(d)) {
+			if (run.length > 0)
+				cleanData.push(run);
+			run = [];
+			continue;
+		}
+		run.push({"X": n++, "Y": d});
 	}
+	cleanData.push(run);
 	return cleanData;
 }
 
@@ -26,13 +34,20 @@ function scaleAndAxis(data, width, height) {
 	// influenced by whether a change is big in the absolute sense.
 	yAxis.ticks(0);
 
+	var xmin = Math.min(...data.map(function(run) { return Math.min(...run.map(it => it.X)); }))
+	var xmax = Math.max(...data.map(function(run) { return Math.max(...run.map(it => it.X)); }))
+	var ymin = Math.min(...data.map(function(run) { return Math.min(...run.map(it => it.Y)); }))
+	var ymax = Math.max(...data.map(function(run) { return Math.max(...run.map(it => it.Y)); }))
+	var xExtent = [xmin, xmax];
+	var yExtent = [ymin, ymax];
+
 	// compute the domains for the axes
-	var xExtent = d3.extent(data, function(d) { return d.X; });
+	//var xExtent = d3.extent(data, function(d) { return d.X; });
 	var xRange = xExtent[1] - xExtent[0];
 	var xDomainMin = xExtent[0] - xRange * 0.02;
 	var xDomainMax = xExtent[1] + xRange * 0.02;
 
-	var yExtent = d3.extent(data, function(d) { return d.Y; });
+	//var yExtent = d3.extent(data, function(d) { return d.Y; });
 	var yRange = yExtent[1] - yExtent[0];
 	var yDomainMin = yExtent[0] - yRange * 0.05;
 	var yDomainMax = yExtent[1] + yRange * 0.05;
@@ -92,10 +107,13 @@ function baseChart(
 		width,
 		height);
 
-	// Create the line object
-	var lineObj = d3.line()
-		.x(function(d) { return xScale(d.X); })
-		.y(function(d) { return yScale(d.Y); });
+	var lineObjects = [];
+	for (let r=0; r<data.length; r++) {
+		var lineObj = new d3.line()
+			.x(function(d) { return xScale(d.X); })
+			.y(function(d) { return yScale(d.Y); });
+		lineObjects.push(lineObj);
+	}
 
 	// Initialise the zoom behaviour
 	var zoomObj = d3.zoom()
@@ -109,13 +127,14 @@ function baseChart(
 		// transform the axis
 		xScale.domain(transform.rescaleX(xScaleOrig).domain());
 
-		// transform the data line
-		svg.select(".line").attr("d", lineObj);
+		for (let r=0; r<data.length; r++) {
+			svg.select(".line-"+r).attr("d", lineObjects[r]);
 
-		// transform the circles
-		points.data(data)
-			.attr("cx", function(d) { return xScale(d.X); })
-			.attr("cy", function(d) { return yScale(d.Y); });
+			// transform the circles
+			pointSets[r].data(data[r])
+				.attr("cx", function(d) { return xScale(d.X); })
+				.attr("cy", function(d) { return yScale(d.Y); });
+		}
 
 		// transform the annotation lines (if any)
 		annoLines = gView.selectAll("line");
@@ -138,6 +157,8 @@ function baseChart(
 	//  4. line
 	//  5. circles with a click event
 
+	var zero = xScale(0);
+
 	// clip path
 	svg.append("defs")
 		.append("clipPath")
@@ -145,12 +166,12 @@ function baseChart(
 		.append("rect")
 		.attr("width", width - 18)
 		.attr("height", height)
-		.attr("transform", "translate(" + 18 + ",0)");
+		.attr("transform", "translate(" + zero + ",0)");
 
 	// y axis
 	svg.append("g")
 		.attr("class", "axis axis--y")
-		.attr("transform", "translate(" + 18 + ",0)")
+		.attr("transform", "translate(" + zero + ",0)")
 		.call(yAxis);
 
 	// x axis
@@ -178,26 +199,32 @@ function baseChart(
 	var gView = gZoom.append("g")
 		.attr("class", "view");
 
-	// add the line to the view
-	gView.append("path")
-		.datum(data)
-		.attr("class", "line")
-		.attr("d", lineObj);
+	// add the line(s) to the view
+	for (let r=0; r<data.length; r++) {
+		gView.append("path")
+			.datum(data[r])
+			.attr("class", "line line-"+r)
+			.attr("d", lineObjects[r]);
+	}
 
-	// add the points to the view
-	var points = gView.selectAll("circle")
-		.data(data)
-		.enter()
-		.append("circle")
-		.attr("cx", function(d) { return xScale(d.X); })
-		.attr("cy", function(d) { return yScale(d.Y); })
-		.attr("data_X", function(d) { return d.X; })
-		.attr("data_Y", function(d) { return d.Y; })
-		.attr("r", 5)
-		.on("click", function(d, i) {
-			d.element = this;
-			return clickFunction(d, i);
-		});
+	var pointSets = [];
+	for (let r=0; r<data.length; r++) {
+		var wrap = gView.append("g");
+		var points = wrap.selectAll("circle")
+			.data(data[r])
+			.enter()
+			.append("circle")
+			.attr("cx", function(d) { return xScale(d.X); })
+			.attr("cy", function(d) { return yScale(d.Y); })
+			.attr("data_X", function(d) { return d.X; })
+			.attr("data_Y", function(d) { return d.Y; })
+			.attr("r", 5)
+			.on("click", function(d, i) {
+				d.element = this;
+				return clickFunction(d, i);
+			});
+		pointSets.push(points);
+	}
 
 	// handle the annotations
 	annotations.forEach(function(a) {

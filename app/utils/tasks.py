@@ -27,6 +27,13 @@ def generate_user_task(user):
 
     user_tasks = Task.query.filter_by(annotator_id=user.id).all()
     user_tasks = [t for t in user_tasks if not t.dataset.is_demo]
+
+    # don't assign a new task if the user has assigned tasks
+    not_done = [t for t in user_tasks if not t.done]
+    if len(not_done) > 0:
+        return None
+
+    # don't assign a new task if the user has reached maximum
     n_user_tasks = len(user_tasks)
     if n_user_tasks >= max_per_user:
         return None

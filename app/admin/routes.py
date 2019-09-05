@@ -1,8 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import clevercsv
+import io
 import os
+import datetime
 
-from flask import render_template, flash, redirect, url_for, current_app
+from flask import (
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    send_file,
+    url_for,
+)
 
 from werkzeug.utils import secure_filename
 
@@ -251,6 +261,43 @@ def view_annotations():
         title="View Annotations",
         annotations=annotations,
         form=form,
+    )
+
+
+@bp.route("/annotations/download", methods=("GET",))
+@admin_required
+def download_annotations_csv():
+    annotations = (
+        Annotation.query.join(Task, Annotation.task)
+        .join(User, Task.user)
+        .join(Dataset, Task.dataset)
+        .order_by(Dataset.id, User.username, Annotation.cp_index)
+        .all()
+    )
+
+    # based on: https://stackoverflow.com/a/45111660/1154005
+    header = ["DatasetID", "DatasetName", "UserID", "AnnotationIndex"]
+
+    proxy = io.StringIO()
+    writer = clevercsv.writer(proxy)
+    writer.writerow(header)
+    for ann in annotations:
+        row = [ann.task.dataset.id, ann.task.dataset.name, ann.task.user.id]
+        if ann.cp_index is None:
+            row.append("no_cp")
+        else:
+            row.append(ann.cp_index)
+        writer.writerow(row)
+
+    mem = io.BytesIO()
+    mem.write(proxy.getvalue().encode("utf-8"))
+    mem.seek(0)
+    proxy.close()
+
+    fname = "%i_annotations.csv" % (round(datetime.datetime.now().timestamp()))
+
+    return send_file(
+        mem, as_attachment=True, attachment_filename=fname, mimetype="text/csv"
     )
 
 

@@ -61,7 +61,11 @@
             <tr>
               <td>
                 <a href="{{ url_for('main.annotate', task_id=task.id) }}">
+                  {% if current_user.is_admin %}
+                  {{ task.dataset.name | title }}
+                  {% else %}
                   Dataset {{ task.dataset.id | title }}
+                  {% endif %}
                 </a>
               </td>
             </tr>
@@ -87,7 +91,11 @@
           </thead>
           {% for task in tasks_done %}
             <tr>
+              {% if current_user.is_admin %}
+              <td>{{ task.dataset.name | title }}</td>
+              {% else %}
               <td>Dataset {{ task.dataset.id | title }}</td>
+              {% endif %}
               <td>{{ task.annotated_on }}</td>
             </tr>
           {% endfor %}

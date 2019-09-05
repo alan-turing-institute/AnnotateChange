@@ -8,6 +8,7 @@ function preprocessData(data) {
 	for (i=0; i<data.values[0].raw.length; i++) {
 		d = data.values[0].raw[i];
 		if (isNaN(d)) {
+			n++;
 			if (run.length > 0)
 				cleanData.push(run);
 			run = [];

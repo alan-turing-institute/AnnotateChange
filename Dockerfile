@@ -1,6 +1,6 @@
 FROM python:3.7-alpine
 
-RUN apk add gcc musl-dev libffi-dev openssl-dev
+RUN apk add gcc musl-dev libffi-dev openssl-dev libxslt-dev build-base
 
 # This Dockerfile is based on:
 # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xix-deployment-on-docker-containers

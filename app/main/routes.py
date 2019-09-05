@@ -9,6 +9,7 @@ from flask_login import current_user
 from app import db
 from app.decorators import login_required
 from app.main import bp
+from app.main.email import send_annotation_backup
 from app.models import Annotation, Task
 from app.utils.datasets import load_data_for_chart
 from app.utils.tasks import generate_user_task
@@ -83,6 +84,15 @@ def annotate(task_id):
         task.annotated_on = now
         db.session.commit()
         flash("Your annotation has been recorded, thank you!", "success")
+
+        # send the annotation as email to the admin for backup
+        record = {
+            "user_id": task.annotator_id,
+            "dataset_id": task.dataset_id,
+            "task_id": task.id,
+            "annotations_raw": annotation,
+        }
+        send_annotation_backup(record)
 
         # assign a new task if necessary
         task = generate_user_task(current_user)

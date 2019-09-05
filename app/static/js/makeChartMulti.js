@@ -17,7 +17,7 @@ function preprocess(data) {
 	var nVar = data.values.length;
 
 	if (data["time"] != null) {
-		console.warn("Time axis is not implemented yet. Ignoring.");
+		// console.log("Time axis is not implemented yet. Ignoring.");
 	}
 	for (i=0; i<data.values[0].raw.length; i++) {
 		var item = {"X": i}

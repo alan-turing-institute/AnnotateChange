@@ -20,7 +20,10 @@ function preprocess(data) {
 		// console.log("Time axis is not implemented yet. Ignoring.");
 	}
 	for (i=0; i<data.values[0].raw.length; i++) {
-		var item = {"X": i}
+		// NOTE: never change this to 1-based indexing. This index is 
+		// ultimately stored in the database as the change point 
+		// index!
+		var item = {"X": i};
 		for (j=0; j<nVar; j++) {
 			item["Y" + j] = data.values[j].raw[i];
 		}

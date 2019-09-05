@@ -13,6 +13,10 @@ function preprocessData(data) {
 			run = [];
 			continue;
 		}
+		// NOTE: remember that this *must* be 0-based indexing, as the 
+		// change point index is ultimately retrieved from this X 
+		// value and the Python code is 0-based as well. Thus, the 
+		// first item should get X = 0.
 		run.push({"X": n++, "Y": d});
 	}
 	cleanData.push(run);

@@ -62,10 +62,14 @@ def validate_dataset(filename):
     if "time" in data.keys():
         if len(data["time"]["raw"]) != data["n_obs"]:
             return "Number of time points doesn't match number of observations"
+        if None in data["time"]["raw"]:
+            return "Null is not supported in time axis. Use 'NaN' instead."
 
     for var in data["series"]:
         if len(var["raw"]) != data["n_obs"]:
             return "Number of observations doesn't match for %s" % var["label"]
+        if None in var["raw"]:
+            return "Null is not supported in series. Use 'NaN' instead."
 
     return None
 

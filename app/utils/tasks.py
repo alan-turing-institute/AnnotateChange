@@ -7,7 +7,7 @@
 
 from flask import current_app
 
-from app.models import User, Dataset, Task
+from app.models import Dataset, Task
 
 
 def generate_user_task(user):

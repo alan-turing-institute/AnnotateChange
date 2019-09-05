@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 0.3.3
+
+* Add support for downloading annotations as CSV file.
+* Add support for missing values in univariate datasets
+
+## Version 0.3.2
+
+* Score user on demo and request repeat if insufficiently accurate
+* Add full name of user and add several checkboxes to registration page
+* Serve static resources from our domain
+* Skip NaN observations in graph
+* Add random walk demo
+* Don't assign task to users if they have an unfinished task
+* Email annotation result to admin as backup
+
 ## Version 0.3.0
 
 * Add support for multidimensional datasets

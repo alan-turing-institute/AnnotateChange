@@ -100,14 +100,14 @@
 						"type": "string",
 						"title": "The Label Schema",
 						"default": "",
-						"pattern": "^(.*)$"
+						"pattern": "^(.+)$"
 					},
 					"type": {
 						"$id": "#/properties/series/items/properties/type",
 						"type": "string",
 						"title": "The Type Schema",
 						"default": "",
-						"pattern": "^(.*)$"
+						"pattern": "^(.+)$"
 					},
 					"raw": {
 						"$id": "#/properties/series/items/properties/raw",

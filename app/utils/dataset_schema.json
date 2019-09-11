@@ -19,6 +19,13 @@
 			"default": "",
 			"pattern": "^(.*)$"
 		},
+		"longname": {
+			"$id": "#/properties/longname",
+			"type": "string",
+			"title": "The Longname Schema",
+			"default": "",
+			"pattern": "^(.+)$"
+		},
 		"n_obs": {
 			"$id": "#/properties/n_obs",
 			"type": "integer",

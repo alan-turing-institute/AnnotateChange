@@ -72,6 +72,7 @@ def assign():
     db.session.commit()
     return redirect(url_for("main.annotate", task_id=task.id))
 
+
 @bp.route("/annotate/<int:task_id>", methods=("GET", "POST"))
 @login_required
 def annotate(task_id):
@@ -123,22 +124,31 @@ def annotate(task_id):
         return url_for("main.index")
 
     task = Task.query.filter_by(id=task_id).first()
+
+    # check if task exists
     if task is None:
         flash("No task with id %r exists." % task_id, "error")
         return redirect(url_for("main.index"))
+
+    # check if task is assigned to this user
     if not task.annotator_id == current_user.id:
         flash(
             "No task with id %r has been assigned to you." % task_id, "error"
         )
         return redirect(url_for("main.index"))
+
+    # check if task is not already done
     if task.done:
         flash("It's not possible to edit annotations at the moment.")
         return redirect(url_for("main.index"))
+
     data = load_data_for_chart(task.dataset.name, task.dataset.md5sum)
     if data is None:
         flash(
-            "An internal error occurred loading this dataset, the admin has been notified. Please try again later. We apologise for the inconvenience."
+            "An internal error occurred loading this dataset, the admin has been notified. Please try again later. We apologise for the inconvenience.",
+            "error",
         )
+        return redirect(url_for("main.index"))
     title = f"Dataset: {task.dataset.id}"
     is_multi = len(data["chart_data"]["values"]) > 1
     return render_template(

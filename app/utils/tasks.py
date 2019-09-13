@@ -55,6 +55,7 @@ def generate_user_task(user):
             continue
         potential_datasets.append((n_needed, dataset))
 
+    # don't assign a dataset if there are no more datasets to annotate
     if len(potential_datasets) == 0:
         return None
 

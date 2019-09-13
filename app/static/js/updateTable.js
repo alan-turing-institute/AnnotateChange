@@ -17,8 +17,7 @@ function updateTable() {
 
 	var heading = new Array();
 	heading[0] = "#";
-	heading[1] = "X";
-	heading[2] = "Y";
+	heading[1] = "T";
 
 	// TABLE COLUMNS
 	var thead = document.createElement('THEAD');
@@ -49,12 +48,6 @@ function updateTable() {
 		));
 		tr.appendChild(td);
 
-		var td = document.createElement('TD');
-		td.appendChild(document.createTextNode(
-			d3.select(cp).data()[0].Y
-		));
-		tr.appendChild(td);
-
 		body.appendChild(tr);
 	}
 	table.appendChild(body);
@@ -77,9 +70,7 @@ function updateTableMulti(numCharts) {
 
 	var heading = new Array();
 	heading[0] = "#";
-	heading[1] = "X";
-	for (j=0; j<numCharts; j++)
-		heading[2+j] = "Y" + (j + 1);
+	heading[1] = "T";
 
 	// Table Columns
 	var thead = document.createElement('THEAD');
@@ -122,12 +113,6 @@ function updateTableMulti(numCharts) {
 		var td = document.createElement('TD');
 		td.appendChild(document.createTextNode(X));
 		tr.appendChild(td);
-
-		for (j=0; j<numCharts; j++) {
-			var td = document.createElement('TD');
-			td.appendChild(document.createTextNode(cp['y' + j]));
-			tr.appendChild(td);
-		}
 
 		body.appendChild(tr);
 	}

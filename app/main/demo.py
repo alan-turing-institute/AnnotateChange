@@ -328,6 +328,7 @@ DEMO_DATA = {
 
 
 def demo_performance(user_id):
+    """ Demo performance is measured by average F1 score """
     score = 0
     for demo_id in DEMO_DATA:
         dataset = Dataset.query.filter_by(
@@ -369,9 +370,9 @@ def redirect_user(demo_id, phase_id):
         if demo_performance(current_user.id) < 0.75:
             flash(
                 "Unfortunately your performance on the introduction "
-                "datasets was not as high as we would like. Please go "
+                "datasets was not as good as we would like. Please go "
                 "through the introduction one more time to make sure "
-                "that you understand and are comfortable with change "
+                "that you fully understand and are comfortable with change "
                 "point detection."
             )
             return redirect(url_for("main.index"))

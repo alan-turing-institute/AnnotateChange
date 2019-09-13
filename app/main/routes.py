@@ -46,6 +46,32 @@ def index():
     return render_template("index.html", title="Home")
 
 
+@bp.route("/assign")
+@login_required
+def assign():
+    # Intermediate page that assigns a task to a user if needed and then
+    # redirects to /annotate/task.id
+    user_tasks = Task.query.filter_by(annotator_id=current_user.id).all()
+    user_tasks = [t for t in user_tasks if not t.dataset.is_demo]
+    user_tasks = [t for t in user_tasks if not t.done]
+
+    # if the user has, for some reason, a unfinished assigned task, redirect to
+    # that
+    if len(user_tasks) > 0:
+        task = user_tasks[0]
+        return redirect(url_for("main.annotate", task_id=task.id))
+
+    task = generate_user_task(current_user)
+    if task is None:
+        flash(
+            "There are no more datasets to annotate at the moment, thanks for all your help!",
+            "info",
+        )
+        return redirect(url_for("main.index"))
+    db.session.add(task)
+    db.session.commit()
+    return redirect(url_for("main.annotate", task_id=task.id))
+
 @bp.route("/annotate/<int:task_id>", methods=("GET", "POST"))
 @login_required
 def annotate(task_id):
@@ -94,17 +120,6 @@ def annotate(task_id):
             "annotations_raw": annotation,
         }
         send_annotation_backup(record)
-
-        # assign a new task if necessary
-        task = generate_user_task(current_user)
-        if task is None:
-            return url_for("main.index")
-        db.session.add(task)
-        db.session.commit()
-        flash(
-            "A new dataset has been assigned for you to annotate. Thanks for your help!",
-            "info",
-        )
         return url_for("main.index")
 
     task = Task.query.filter_by(id=task_id).first()

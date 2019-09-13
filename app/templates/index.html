@@ -28,8 +28,7 @@
       <br>
       <br>
       <p>
-        When you have finished the introduction, the datasets to annotate 
-        will appear here.
+        Once you have finished the introduction you will be able to annotate real datasets.
       </p>
       {% endif %}
     {% else %}
@@ -37,52 +36,23 @@
       Thank you for completing the introduction. If you want to revisit 
       it, you can do so by <a href="{{ url_for('main.demo') }}">clicking here</a>.
     </p>
-      {% if tasks_todo|length == 0 and tasks_done|length == 0 %}
-      <br>
-      <br>
-      <p>
-        There are currently no datasets for you to annotate. Please check back
-        again later.
-      </p>
-      {% endif %}
     {% endif %}
-    {% if tasks_todo %}
-      <h3>Datasets to Annotate</h3>
-      <p>
-        Below are the datasets that we would like you to annotate, thank you 
-        very much for your help!
-      </p>
-      <div class="tasks-todo">
-        <table class="table table-striped">
-          <thead class="thead-dark">
-            <th scope="col">Name</th>
-          </thead>
-          {% for task in tasks_todo %}
-            <tr>
-              <td>
-                <a href="{{ url_for('main.annotate', task_id=task.id) }}">
-                  {% if current_user.is_admin %}
-                  {{ task.dataset.name | title }}
-                  {% else %}
-                  Dataset {{ task.dataset.id | title }}
-                  {% endif %}
-                </a>
-              </td>
-            </tr>
-          {% endfor %}
-        </table>
-      </div>
-    {% elif tasks_todo|length == 0 and tasks_done|length > 0 %}
-      <div id="done">
-        <img src="{{ url_for('static', filename='img/done.png') }}">
-        <span>
-          No more annotations to do! Thank you so much for your help, 
-          <b>you rock!</b>
-        </span>
+    {% if current_user.is_introduced %}
+      <h3>Doing Annotations</h3>
+      {% if tasks_done|length == 0 %}
+        <p>Click the button below to start annotating!</p>
+      {% else %}
+        <p>Click the button below to do some more annotations!</p>
+      {% endif %}
+      <div id="annotate-button">
+        <a class="btn btn-primary btn-lg btn-block" href="{{ url_for('main.assign') }}" role="button">
+          Click here to annotate a time series!
+        </a>
       </div>
     {% endif %}
     {% if tasks_done %}
       <h3>Completed Annotations</h3>
+      <p>Below are the time series that you've annotated so far. Thanks so much for your help!</p>
       <div class="tasks-done">
         <table class="table table-striped">
           <thead>

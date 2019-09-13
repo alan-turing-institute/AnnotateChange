@@ -23,7 +23,6 @@ from app.main import bp
 from app.main.forms import NextForm
 from app.main.routes import RUBRIC
 from app.utils.datasets import load_data_for_chart, get_demo_true_cps
-from app.utils.tasks import generate_user_task
 
 LOGGER = logging.getLogger(__name__)
 
@@ -379,13 +378,6 @@ def redirect_user(demo_id, phase_id):
 
         # mark user as introduced
         current_user.is_introduced = True
-        db.session.commit()
-
-        # assign a task to the user
-        task = generate_user_task(current_user)
-        if task is None:
-            return redirect(url_for("main.index"))
-        db.session.add(task)
         db.session.commit()
 
         return redirect(url_for("main.index"))

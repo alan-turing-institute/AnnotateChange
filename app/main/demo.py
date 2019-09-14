@@ -254,9 +254,9 @@ DEMO_DATA = {
                 target="_blank">random walk</a> without a change point. Some 
                 time series data will look similar to this random walk, in the 
                 sense that it varies over time and changes, but doesn't 
-                actually change *abruptly*.  This is important to keep in mind, 
-                because not all datasets that you'll see will necessarily have 
-                change points (it's up to you to decide!)
+                actually ever change **abruptly**.  This is important to keep 
+                in mind, because not all datasets that you'll see will 
+                necessarily have change points (it's up to you to decide!)
                 """
                 )
             )
@@ -273,8 +273,8 @@ DEMO_DATA = {
                 days of the week are more busy than others. Seasonality can 
                 make it harder to find the change points in the dataset (if 
                 there are any at all). Try to follow the pattern of 
-                seasonality, and check whether the pattern changes in one of 
-                the ways we've seen previously."""
+                seasonality, and check whether the pattern changes in its 
+                behaviour or in one of the ways that we've seen previously."""
                 )
             )
         },
@@ -293,6 +293,9 @@ DEMO_DATA = {
                 winter season to the summer will show a change in passenger 
                 numbers at the airport, but this will generally not be an 
                 *abrupt* change.
+
+                In some cases, it can help to *blur your eyes* to get a more 
+                "global" view of the time series.
                 """
                 )
             )
@@ -328,7 +331,6 @@ DEMO_DATA = {
 
 
 def demo_performance(user_id):
-    """ Demo performance is measured by average F1 score """
     score = 0
     for demo_id in DEMO_DATA:
         dataset = Dataset.query.filter_by(
@@ -370,12 +372,14 @@ def redirect_user(demo_id, phase_id):
         if demo_performance(current_user.id) < 0.75:
             flash(
                 "Unfortunately your performance on the introduction "
-                "datasets was not as good as we would like. Please go "
+                "datasets was not as high as we would like. Please go "
                 "through the introduction one more time to make sure "
-                "that you fully understand and are comfortable with change "
+                "that you understand and are comfortable with change "
                 "point detection."
             )
             return redirect(url_for("main.index"))
+        else:
+            flash("Thank you for completing the introduction!", "success")
 
         # mark user as introduced
         current_user.is_introduced = True

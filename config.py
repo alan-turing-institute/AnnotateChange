@@ -48,17 +48,15 @@ class Config(object):
     TEMP_DIR = "tmp"
 
     # task distribution settings
-    TASKS_MAX_PER_USER =int(os.environ.get("TASKS_MAX_PER_USER") or 5)
-    TASKS_NUM_PER_DATASET = int(os.environ.get("TASKS_NUM_PER_DATASET") or 10)
+    TASKS_MAX_PER_USER = int(os.environ.get("TASKS_MAX_PER_USER") or 50)
+    TASKS_NUM_PER_DATASET = int(os.environ.get("TASKS_NUM_PER_DATASET") or 5)
 
     # user emails allowed
     USER_EMAIL_DOMAINS = os.environ.get("USER_EMAIL_DOMAINS") or ""
     USER_EMAIL_DOMAINS = [
         x.strip() for x in USER_EMAIL_DOMAINS.split(";") if x.strip()
     ]
-    USER_EMAIL_DOMAINS = (
-        None if not USER_EMAIL_DOMAINS else USER_EMAIL_DOMAINS
-    )
+    USER_EMAIL_DOMAINS = None if not USER_EMAIL_DOMAINS else USER_EMAIL_DOMAINS
     USER_EMAILS = os.environ.get("USER_EMAILS") or ""
     USER_EMAILS = [x.strip() for x in USER_EMAILS.split(";") if x.strip()]
     USER_EMAILS = None if not USER_EMAILS else USER_EMAILS

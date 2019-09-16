@@ -102,7 +102,7 @@ class Task(db.Model):
     dataset_id = db.Column(db.Integer, nullable=False)
     done = db.Column(db.Boolean, nullable=False, default=False)
     annotated_on = db.Column(db.DateTime, nullable=True)
-    admin_assigned = db.Column(db.Boolean, nullable=False, default=False)
+    admin_assigned = db.Column(db.Boolean, default=False)
 
     user = db.relation("User")
     annotator_id = db.Column(db.Integer, db.ForeignKey("user.id"))

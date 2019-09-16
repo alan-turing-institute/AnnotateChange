@@ -5,13 +5,26 @@
 """
 
 import random
+import multiprocessing
 
 from flask import current_app
 
 from app.models import Dataset, Task
 
+TASK_LOCK = multiprocessing.Lock()
+
 
 def generate_user_task(user):
+    task = None
+    TASK_LOCK.acquire(timeout=10)
+    try:
+        task = realgenerate_user_task(user)
+    finally:
+        TASK_LOCK.release()
+    return task
+
+
+def realgenerate_user_task(user):
     """
     Generate new task for a given user.
 

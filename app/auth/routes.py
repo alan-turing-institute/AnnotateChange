@@ -97,6 +97,8 @@ def login():
             annotator_id=current_user.id, done=False
         ).all()
         for task in user_tasks:
+            if task.admin_assigned:
+                continue
             anns = Annotation.query.filter_by(task_id=task.id).all()
             if len(anns) > 0:
                 flash(

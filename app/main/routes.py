@@ -56,7 +56,7 @@ def assign():
     user_tasks = [t for t in user_tasks if not t.done]
 
     # if the user has, for some reason, a unfinished assigned task, redirect to
-    # that
+    # that. This can happen if the admin has assigned this task.
     if len(user_tasks) > 0:
         task = user_tasks[0]
         return redirect(url_for("main.annotate", task_id=task.id))

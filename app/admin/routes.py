@@ -78,6 +78,7 @@ def manage_tasks():
                 return redirect(url_for("admin.manage_tasks"))
             else:
                 task = Task(annotator_id=user.id, dataset_id=dataset.id)
+                task.admin_assigned = True
                 db.session.add(task)
                 db.session.commit()
                 flash("Task registered successfully.", "success")

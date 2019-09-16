@@ -4,6 +4,7 @@
 
 """
 
+import random
 
 from flask import current_app
 
@@ -38,14 +39,13 @@ def generate_user_task(user):
     if n_user_tasks >= max_per_user:
         return None
 
+    # collect datasets that can be potentially assigned to the user
     potential_datasets = []
     for dataset in Dataset.query.filter_by(is_demo=False).all():
         dataset_tasks = Task.query.filter_by(dataset_id=dataset.id).all()
 
         # check that this dataset needs more annotations
         n_needed = num_per_dataset - len(dataset_tasks)
-        if n_needed <= 0:
-            continue
 
         # check that this dataset is not already assigned to the user
         task = Task.query.filter_by(
@@ -55,13 +55,35 @@ def generate_user_task(user):
             continue
         potential_datasets.append((n_needed, dataset))
 
-    # don't assign a dataset if there are no more datasets to annotate
+    # don't assign a dataset if there are no more datasets to annotate (user
+    # has done all)
     if len(potential_datasets) == 0:
         return None
 
-    # sort datasets so that the ones who need the least are at the front.
-    potential_datasets.sort(key=lambda x: x[0])
+    # First try assigning a random dataset that still needs annotations
+    dataset = None
+    need_annotations = [d for n, d in potential_datasets if n > 0]
 
-    _, dataset = potential_datasets[0]
+    # Weights are set to prioritize datasets that need fewer annotations to
+    # reach our goal (num_per_dataset), with a small chance of selecting
+    # another dataset.
+    weights = [
+        (num_per_dataset - n + 0.01) for n, d in potential_datasets if n > 0
+    ]
+    if need_annotations:
+        dataset = random.choices(need_annotations, weights=weights)[0]
+    else:
+        # if there are no such datasets, then this user is requesting
+        # additional annotations after all datasets have our desired coverage
+        # of num_per_dataset. Assign a random dataset that has the least excess
+        # annotations (thus causing even distribution).
+        max_nonpos = max((n for n, d in potential_datasets if n <= 0))
+        extra = [d for n, d in potential_datasets if n == max_nonpos]
+        if extra:
+            dataset = random.choice(extra)
+
+    if dataset is None:
+        return None
+
     task = Task(annotator_id=user.id, dataset_id=dataset.id)
     return task

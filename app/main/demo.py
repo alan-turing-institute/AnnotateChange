@@ -16,6 +16,8 @@ from flask import (
 )
 from flask_login import current_user
 
+from sqlalchemy import desc
+
 from app import db
 from app.decorators import login_required
 from app.models import Annotation, Dataset, Task
@@ -336,9 +338,13 @@ def demo_performance(user_id):
         dataset = Dataset.query.filter_by(
             name=DEMO_DATA[demo_id]["dataset"]["name"]
         ).first()
-        task = Task.query.filter_by(
-            annotator_id=user_id, dataset_id=dataset.id
-        ).first()
+        tasks = (
+            Task.query.filter_by(annotator_id=user_id, dataset_id=dataset.id)
+            .order_by(desc(Task.annotated_on))
+            .limit(1)
+            .all()
+        )
+        task = tasks[0]
         annotations = (
             Annotation.query.join(Task, Annotation.task)
             .filter_by(id=task.id)
@@ -425,14 +431,6 @@ def process_annotations(demo_id):
     dataset = Dataset.query.filter_by(
         name=DEMO_DATA[demo_id]["dataset"]["name"]
     ).first()
-    task = Task.query.filter_by(
-        annotator_id=current_user.id, dataset_id=dataset.id
-    ).first()
-    # this happens if the user returns to the same demo page, but hasn't
-    # completed the full demo yet. Same as above, not updating because we want
-    # the originals.
-    if not task is None:
-        return retval
 
     # Create a new task
     task = Task(annotator_id=current_user.id, dataset_id=dataset.id)

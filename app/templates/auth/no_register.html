@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+  {{ super() }}
+{% endblock %}
+
+{% block app_content %}
+<h1>Register</h1>
+<div class="row">
+  <div class="col-md-6">
+  Thank you for your interest in AnnotateChange. We are not currently looking 
+  for new annotators, so registration has been disabled. If you already have 
+  an account, you can <a href="/auth/login">login here</a>.
+  </div>
+</div>
+{% endblock %}

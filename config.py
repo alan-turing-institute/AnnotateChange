@@ -60,3 +60,6 @@ class Config(object):
     USER_EMAILS = os.environ.get("USER_EMAILS") or ""
     USER_EMAILS = [x.strip() for x in USER_EMAILS.split(";") if x.strip()]
     USER_EMAILS = None if not USER_EMAILS else USER_EMAILS
+
+    # other
+    ACCEPTING_REGISTRATION = bool(int(os.environ.get('ACCEPTING_REGISTRATION', 0))) or False

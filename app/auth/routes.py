@@ -133,6 +133,9 @@ def logout():
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
+    if not current_app.config['ACCEPTING_REGISTRATION']:
+        return render_template("auth/no_register.html")
+
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = RegistrationForm()

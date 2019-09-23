@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.4
+
+* Add annotation time to CSV download.
+
 ## Version 0.4.3
 
 * Add configuration option for disabling registration.

@@ -277,13 +277,24 @@ def download_annotations_csv():
     )
 
     # based on: https://stackoverflow.com/a/45111660/1154005
-    header = ["DatasetID", "DatasetName", "UserID", "AnnotationIndex"]
+    header = [
+        "DatasetID",
+        "DatasetName",
+        "UserID",
+        "AnnotatedOn",
+        "AnnotationIndex",
+    ]
 
     proxy = io.StringIO()
     writer = clevercsv.writer(proxy)
     writer.writerow(header)
     for ann in annotations:
-        row = [ann.task.dataset.id, ann.task.dataset.name, ann.task.user.id]
+        row = [
+            ann.task.dataset.id,
+            ann.task.dataset.name,
+            ann.task.user.id,
+            ann.task.annotated_on,
+        ]
         if ann.cp_index is None:
             row.append("no_cp")
         else:

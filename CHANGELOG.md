@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.3
+
+* Add configuration option for disabling registration.
+
 ## Version 0.3.3
 
 * Add support for downloading annotations as CSV file.

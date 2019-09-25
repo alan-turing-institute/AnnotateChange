@@ -9,6 +9,7 @@
 		"name",
 		"n_obs",
 		"n_dim",
+		"time",
 		"series"
 	],
 	"properties": {
@@ -61,8 +62,7 @@
 			"title": "The Time Schema",
 			"default": null,
 			"required": [
-				"format",
-				"raw"
+				"index"
 			],
 			"properties": {
 				"format": {
@@ -71,6 +71,17 @@
 					"title": "The Format Schema",
 					"default": "",
 					"pattern": "^(.*)$"
+				},
+				"index": {
+					"$id": "#/properties/time/properties/index",
+					"type": "array",
+					"title": "Integer index of the series, starting from 0.",
+					"items": {
+						"$id": "#/properties/time/properties/index/items",
+						"type": "integer",
+						"title": "The index items schema",
+						"default": null
+					}
 				},
 				"raw": {
 					"$id": "#/properties/time/properties/raw",

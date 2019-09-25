@@ -61,10 +61,21 @@ def validate_dataset(filename):
         return "Number of dimensions and number of series don't match"
 
     if "time" in data.keys():
-        if len(data["time"]["raw"]) != data["n_obs"]:
-            return "Number of time points doesn't match number of observations"
-        if None in data["time"]["raw"]:
-            return "Null is not supported in time axis. Use 'NaN' instead."
+        if not "format" in data["time"] and "raw" in data["time"]:
+            return "'raw' must be accompanied by format"
+        if "format" in data["time"] and not "raw" in data["time"]:
+            return "Format must be accompanied by 'raw'"
+        if "index" in data["time"]:
+            if not data["time"]["index"][0] == 0:
+                return "Index should start at zero."
+            if not len(data["time"]["index"]) == data["n_obs"]:
+                return "Number of indices must match number of observations"
+        if "raw" in data["time"]:
+            if len(data["time"]["raw"]) != data["n_obs"]:
+                return "Number of time points doesn't match number of observations"
+            if None in data["time"]["raw"]:
+                return "Null is not supported in time axis. Use 'NaN' instead."
+
 
     has_missing = False
     for var in data["series"]:

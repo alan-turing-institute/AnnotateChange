@@ -37,6 +37,8 @@
         <th scope="col">Confirmed?</th>
         <th scope="col">Introduced?</th>
         <th scope="col">Last Active (UTC)</th>
+        <th scope="col">Requested Update?</th>
+        <th scope="col">Requested Credit?</th>
         <th scope="col">Admin?</th>
       </thead>
       {% for user in users %}
@@ -47,6 +49,8 @@
           <td>{% if user.is_confirmed %}Yes{% else %}No{% endif %}</td>
           <td>{% if user.is_introduced %}Yes{% else %}No{% endif %}</td>
           <td>{{ user.last_active }}</td>
+          <td>{% if user.wants_updates %}Yes{% else %}{% endif %}</td>
+          <td>{% if user.wants_credit %}Yes{% else %}{% endif %}</td>
           <td>{% if user.is_admin %}Yes{% else %}{% endif %}</td>
         </tr>
       {% endfor %}

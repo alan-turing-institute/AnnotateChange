@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
+# License: See LICENSE file
+# Copyright: 2020 (c) The Alan Turing Institute
+
 import getpass
 
 from email_validator import validate_email

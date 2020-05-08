@@ -1,3 +1,5 @@
+# Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
+
 FROM python:3.7-alpine
 
 RUN apk add gcc musl-dev libffi-dev openssl-dev libxslt-dev build-base

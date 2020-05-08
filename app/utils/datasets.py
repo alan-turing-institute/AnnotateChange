@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
+# License: See LICENSE file
+# Copyright: 2020 (c) The Alan Turing Institute
+
 """
 Dataset handling
 
@@ -9,8 +13,6 @@ www.jsonschema.net or yapi.demo.qunar.com/editor/
 
 Missing values must be denoted by 'NaN' (this is understood by the JSON 
 decoder).
-
-Author: Gertjan van den Burg
 
 """
 
@@ -76,7 +78,6 @@ def validate_dataset(filename):
             if None in data["time"]["raw"]:
                 return "Null is not supported in time axis. Use 'NaN' instead."
 
-
     has_missing = False
     for var in data["series"]:
         if len(var["raw"]) != data["n_obs"]:
@@ -85,7 +86,7 @@ def validate_dataset(filename):
             return "Null is not supported in series. Use 'NaN' instead."
         has_missing = has_missing or any(map(math.isnan, var["raw"]))
 
-    # this doesn't happen in any dataset yet, so let's not implement it until 
+    # this doesn't happen in any dataset yet, so let's not implement it until
     # we need it.
     if data["n_dim"] > 1 and has_missing:
         return "Missing values are not yet supported for multidimensional data"

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
+
 # Activate the virtual environment
 poetry shell
 

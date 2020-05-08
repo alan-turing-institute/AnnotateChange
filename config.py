@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+# Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
+# License: See LICENSE file
+# Copyright: 2020 (c) The Alan Turing Institute
+
 """Configuration for the AnnotateChange app
 
 Almost all configuration options are expected to be supplied through 

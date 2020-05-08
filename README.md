@@ -84,11 +84,11 @@ Below are some thoughts that may help make sense of the codebase.
   created using the [cli](./app/cli.py).
 
 * All datasets must adhere to a specific dataset schema (see 
-  [utils/dataset_schema.json](utils/dataset_schema.json)).
+  [utils/dataset_schema.json](app/utils/dataset_schema.json)).
 
 * Annotations are stored in the database using 0-based indexing. Tasks are 
   assigned on the fly when a user requests a time series to annotate (see 
-  [utils/tasks.py](utils/tasks.py)).
+  [utils/tasks.py](app/utils/tasks.py)).
 
 * Users can only begin annotating when they have successfully passed the 
   introduction.

@@ -1,9 +1,12 @@
 #!/bin/sh
-
+#
+# Script to run the AnnotateChange application.
+#
+# First tries to perform all database migrations, then launches the app 
+# through gunicorn. The script assumes that all dependencies are available in 
+# the environment.
+#
 # Author: G.J.J. van den Burg <gvandenburg@turing.ac.uk>
-
-# Activate the virtual environment
-poetry shell
 
 # Run database migrations
 while true; do

@@ -20,16 +20,10 @@ ENV YOUR_ENV=${YOUR_ENV} \
 	PYTHONHASHSEED=random \
 	PIP_NO_CACHE_DIR=off \
 	PIP_DIABLE_PIP_VERSION_CHECK=on \
-	PIP_DEFAULT_TIMEOUT=100 \
-	POETRY_VERSION=0.12.11
+	PIP_DEFAULT_TIMEOUT=60
 
-RUN pip install "poetry==$POETRY_VERSION"
-
-COPY poetry.lock pyproject.toml /home/annotatechange/
-
-RUN poetry config settings.virtualenvs.create false \
-	    && poetry install $(test "$YOUR_ENV" == production && echo "--no-dev") \
-	    --no-interaction --no-ansi
+COPY requirements.txt /home/annotatechange/
+RUN pip install -r requirements.txt
 
 COPY app app
 COPY migrations migrations

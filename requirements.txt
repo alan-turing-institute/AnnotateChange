@@ -1,0 +1,14 @@
+flask>=1.0
+flask-wtf>=0.14.2
+flask-sqlalchemy>=2.3
+flask-migrate>=2.4
+flask-login>=0.4.1
+flask-mail>=0.9.1
+pyjwt>=1.7
+flask-bootstrap>=3.3.0.1
+email_validator>=1.0
+gunicorn>=19.9
+pymysql>=0.9.3
+cryptography>=2.6
+markdown>=3.1
+jsonschema>=3.0

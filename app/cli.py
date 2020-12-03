@@ -4,6 +4,7 @@
 # License: See LICENSE file
 # Copyright: 2020 (c) The Alan Turing Institute
 
+import click
 import getpass
 
 from email_validator import validate_email
@@ -18,7 +19,8 @@ def register(app):
         pass
 
     @admin.command()
-    def add():
+    @click.option("--auto-confirm-email", is_flag=True)
+    def add(auto_confirm_email):
         username = input("Enter username: ")
         email = input("Enter email address: ")
         password = getpass.getpass()
@@ -30,7 +32,12 @@ def register(app):
 
         validate_email(email)
 
-        user = User(username=username, email=email, is_admin=True)
+        user = User(
+            username=username,
+            email=email,
+            is_admin=True,
+            is_confirmed=auto_confirm_email,
+        )
         user.set_password(password)
         db.session.add(user)
         db.session.commit()

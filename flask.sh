@@ -8,4 +8,4 @@ echo "FLASK_APP = ${FLASK_APP}"
 echo "FLASK_ENV = ${FLASK_ENV}"
 echo "Running: flask $*"
 
-poetry run flask "$@"
+flask "$@"

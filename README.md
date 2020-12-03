@@ -194,8 +194,7 @@ Below are some thoughts that may help make sense of the codebase.
   excellent 
   tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world) 
   for an introduction to Flask. The [flask.sh](./flask.sh) shell script loads 
-  the appropriate environment variables and runs the application in a virtual 
-  environment managed by Poetry.
+  the appropriate environment variables and runs the application.
 
 * The application handles user management and is centered around the idea of a 
   "task" which links a particular user to a particular time series to 
@@ -203,10 +202,13 @@ Below are some thoughts that may help make sense of the codebase.
 
 * An admin role is available, and the admin user can manually assign and 
   delete tasks as well as add/delete users, datasets, etc. The admin user is 
-  created using the [cli](./app/cli.py).
+  created using the [cli](./app/cli.py) (see the Getting Started documentation 
+  above).
 
 * All datasets must adhere to a specific dataset schema (see 
-  [utils/dataset_schema.json](app/utils/dataset_schema.json)).
+  [utils/dataset_schema.json](app/utils/dataset_schema.json)). See the files 
+  in [demo_data] for examples, as well as those in 
+  [TCPD](https://github.com/alan-turing-institute/TCPD).
 
 * Annotations are stored in the database using 0-based indexing. Tasks are 
   assigned on the fly when a user requests a time series to annotate (see 
@@ -217,8 +219,6 @@ Below are some thoughts that may help make sense of the codebase.
 
 * Configuration of the app is done through environment variables, see the 
   [.env.example](.env.example) file for an example.
-
-* [Poetry](https://python-poetry.org/) is used for dependency management.
 
 * Docker is used for deployment (see the deployment documentation in 
   [docs](docs)), and [Traefik](https://containo.us/traefik/) is used for SSL, 

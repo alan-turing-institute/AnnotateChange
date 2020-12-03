@@ -114,16 +114,20 @@ certificates. To set up Traefik, follow these steps:
 
 ## AnnotateChange
 
-For AnnotateChange we have a [private repo on 
-DockerHub](https://hub.docker.com/r/gjjvdburg/annotatechange). Images are 
-built and pushed based on the [repository on 
-Github](https://github.com/alan-turing-institute/AnnotateChange).
-
 Most of the configuration of the app is provided through environment 
 variables, that are encoded in an environment file. An example of such a file 
 is included in the Github repository.
 
 1. Create a directory ``/home/deploy/production/annotatechange/``
+1. Clone the AnnotateChange repo to this directory and switch to it:
+   ```
+   $ git clone https://github.com/alan-turing-institute/AnnotateChange /home/deploy/production/annotatechange
+   $ cd /home/deploy/production/annotatechange/
+   ```
+1. Build the docker image:
+   ```
+   $ docker build -t gjjvdburg/annotatechange .
+   ```
 1. Copy the ``.env.example`` file to this directory
 1. Rename the file ``.env``
 1. Update the file for your configuration, at least you'll have to set the 

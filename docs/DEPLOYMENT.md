@@ -159,7 +159,7 @@ is included in the Github repository.
          - ./persist/instance:/home/annotatechange/instance
 
      db:
-       image: mysql
+       image: mysql    # last known working version: 8.0.22
        env_file: .env
        volumes:
          - ./persist/mysql:/var/lib/mysql

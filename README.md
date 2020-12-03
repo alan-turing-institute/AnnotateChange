@@ -53,6 +53,128 @@ Some of the features of AnnotateChange include:
 
 * Time series datasets are verified upon upload acccording to a strict schema.
 
+## Getting Started
+
+Below are instructions for setting up the application for local development 
+and for running the application with Docker.
+
+### Basic
+
+AnnotateChange can be launched quickly for local development as follows:
+
+1. Clone the repo
+   ```
+   $ git clone https://github.com/alan-turing-institute/AnnotateChange
+   $ cd AnnotateChange
+   ```
+
+2. Set up a virtual environment and install dependencies (requires Python 
+   3.7+)
+   ```
+   $ python -m venv ./venv
+   $ source ./venv/bin/activate
+   $ pip install -r requirements.txt
+   ```
+
+3. Create local development environment file
+   ```
+   $ cp .env.example .env.development
+   ```
+   edit this file with ``DB_TYPE=sqlite3`` so we don't have to deal with MySQL 
+   locally.
+
+4. Initialize the database (this will be a local ``app.db`` file).
+   ```
+   $ ./flask.sh db upgrade
+   ```
+
+5. Create the admin user account
+   ```
+   $ ./flask.sh admin add --auto-confirm-email
+   ```
+   The ``--auto-confirm-email`` flag automatically marks the email address of 
+   the admin user as confirmed. This is mostly useful in development 
+   environments when you don't have a mail address set up yet.
+
+6. Run the application
+   ```
+   $ ./flask.sh run
+   ```
+   This should tell you where its running, probably ``localhost:5000``. You 
+   should be able to log in with the admin account you've just created.
+
+7. As admin, upload all demo datasets (included in [demo_data](./demo_data)) 
+   through: Admin Panel -> Add dataset. You should then be able to follow the 
+   introduction to the app (available from the landing page).
+
+### Docker
+
+To use AnnotateChange locally using Docker, follow the steps below. For a 
+full-fledged installation on a server, see the [deployment 
+instructions](./docs/DEPLOYMENT).
+
+0. Install [docker](https://docs.docker.com/get-docker/) and 
+   [docker-compose](https://docs.docker.com/compose/install/).
+
+1. Clone this repository and switch to it:
+   ```
+   $ git clone https://github.com/alan-turing-institute/AnnotateChange
+   $ cd AnnotateChange
+   ```
+
+2. Build the docker image:
+   ```
+   $ docker build -t gjjvdburg/annotatechange .
+   ```
+
+3. Create the directory for persistent MySQL database storage:
+   ```
+   $ mkdir -p persist/{instance,mysql}
+   $ sudo chown :1024 persist/instance
+   $ chmod 775 persist/instance
+   $ chmod g+s persist/instance
+   ```
+
+4. Copy the environment variables file and adjust where needed
+   ```
+   $ cp .env.example .env
+   ```
+   When moving to production, you'll need to change the `FLASK_ENV` variable 
+   accordingly. Please also make sure to set a proper `SECRET_KEY` and 
+   `AC_MYSQL_PASSWORD` (`= MYSQL_PASSWORD`). You'll also need to configure a 
+   mail account so the application can send out emails for registration etc. 
+   This is what the variables prefixed with ``MAIL_`` are for. The 
+   ``ADMIN_EMAIL`` is likely your own email, it is used when the app 
+   encounters an error and to send backups of the annotation records. You can 
+   limit the email domains users can use with the ``USER_EMAIL_DOMAINS`` 
+   variable. See the [config.py](config.py) file for more info on the 
+   configuration options.
+
+5. Create a local docker network for communiation between the AnnotateChange 
+   app and the MySQL server:
+   ```
+   $ docker network create web
+   ```
+
+6. Launch the services with docker-compose
+   ```
+   $ docker-compose up
+   ```
+   If all goes well, you should be able to point your browser to 
+   ``localhost:7831`` and see the landing page of the application. Stop the 
+   service before continuing to the next step (by pressing `Ctrl+C`).
+
+7. Once you have the app running, you'll want to create an admin account so 
+   you can upload datasets, manage tasks and users, and download annotation 
+   results. This can be done using the following command:
+   ```
+   $ docker-compose run --entrypoint 'flask admin add --auto-confirm-email' annotatechange
+   ```
+
+8. As admin, upload all demo datasets (included in [demo_data](./demo_data)) 
+   through: Admin Panel -> Add dataset. You should then be able to follow the 
+   introduction to the app (available from the landing page).
+
 ## Notes
 
 This codebase is provided "as is". If you find any problems, please raise an 

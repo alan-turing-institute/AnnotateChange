@@ -4,7 +4,7 @@
 # License: See LICENSE file
 # Copyright: 2020 (c) The Alan Turing Institute
 
-import clevercsv
+import csv
 import io
 import os
 import datetime
@@ -290,7 +290,7 @@ def download_annotations_csv():
     ]
 
     proxy = io.StringIO()
-    writer = clevercsv.writer(proxy)
+    writer = csv.writer(proxy)
     writer.writerow(header)
     for ann in annotations:
         row = [

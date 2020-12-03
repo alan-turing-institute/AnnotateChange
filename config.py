@@ -43,7 +43,7 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     ADMINS = [
         x.strip()
-        for x in os.environ.get("ADMIN_EMAILS").split(";")
+        for x in os.environ.get("ADMIN_EMAILS", "").split(";")
         if x.strip()
     ]
 

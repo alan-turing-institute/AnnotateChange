@@ -9,6 +9,8 @@ services:
       - "traefik.docker.network=web"
       - "traefik.frontend.rule=Host:change.gertjanvandenburg.com"
       - "traefik.port=7831"
+    ports:
+      - "7831:7831"
     networks:
       - internal
       - web
@@ -26,6 +28,8 @@ services:
       - internal
     labels:
       - "traefik.enable=false"
+    cap_add:
+      - SYS_NICE # https://stackoverflow.com/q/55559386/
 
 networks:
   web:

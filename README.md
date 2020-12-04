@@ -71,7 +71,9 @@ AnnotateChange can be launched quickly for local development as follows:
 2. Set up a virtual environment and install dependencies (requires Python 
    3.7+)
    ```
-   $ python -m venv ./venv
+   $ sudo apt-get install -y python3-venv # assuming Ubuntu
+   $ pip install wheel
+   $ python3 -m venv ./venv
    $ source ./venv/bin/activate
    $ pip install -r requirements.txt
    ```
@@ -79,9 +81,9 @@ AnnotateChange can be launched quickly for local development as follows:
 3. Create local development environment file
    ```
    $ cp .env.example .env.development
+   $ sed -i 's/DB_TYPE=mysql/DB_TYPE=sqlite3/g' .env.development
    ```
-   edit this file with ``DB_TYPE=sqlite3`` so we don't have to deal with MySQL 
-   locally.
+   With ``DB_TYPE=sqlite3``, we don't have to deal with MySQL locally.
 
 4. Initialize the database (this will be a local ``app.db`` file).
    ```
@@ -103,9 +105,12 @@ AnnotateChange can be launched quickly for local development as follows:
    This should tell you where its running, probably ``localhost:5000``. You 
    should be able to log in with the admin account you've just created.
 
-7. As admin, upload all demo datasets (included in [demo_data](./demo_data)) 
+7. As admin, upload **ALL** demo datasets (included in [demo_data](./demo_data)) 
    through: Admin Panel -> Add dataset. You should then be able to follow the 
    introduction to the app (available from the landing page).
+
+8. After completing the instruction, you then will be able to access the user 
+   interface ("Home") to annotate your own time series.
 
 ### Docker
 
@@ -135,11 +140,12 @@ instructions](./docs/DEPLOYMENT).
    $ chmod g+s persist/instance
    ```
 
-4. Copy the environment variables file and adjust where needed
+4. Copy the environment variables file:
    ```
    $ cp .env.example .env
    ```
-   When moving to production, you'll need to change the `FLASK_ENV` variable 
+   Some environment variables can be adjusted if needed. For example, 
+   when moving to production, you'll need to change the `FLASK_ENV` variable 
    accordingly. Please also make sure to set a proper `SECRET_KEY` and 
    `AC_MYSQL_PASSWORD` (`= MYSQL_PASSWORD`). You'll also need to configure a 
    mail account so the application can send out emails for registration etc. 
@@ -160,6 +166,7 @@ instructions](./docs/DEPLOYMENT).
    ```
    $ docker-compose up
    ```
+   You may need to wait 2 minutes here before the database is initialized.
    If all goes well, you should be able to point your browser to 
    ``localhost:7831`` and see the landing page of the application. Stop the 
    service before continuing to the next step (by pressing `Ctrl+C`).
@@ -171,9 +178,12 @@ instructions](./docs/DEPLOYMENT).
    $ docker-compose run --entrypoint 'flask admin add --auto-confirm-email' annotatechange
    ```
 
-8. As admin, upload all demo datasets (included in [demo_data](./demo_data)) 
+8. As admin, upload **ALL** demo datasets (included in [demo_data](./demo_data)) 
    through: Admin Panel -> Add dataset. You should then be able to follow the 
    introduction to the app (available from the landing page).
+
+9. After completing the instruction, you then will be able to access the user 
+   interface ("Home") to annotate your own time series.
 
 ## Notes
 

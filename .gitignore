@@ -4,4 +4,6 @@ __pycache__/
 .env.development
 .env.production
 instance/
+venv/
+app.db
 *.egg-info
